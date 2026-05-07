@@ -527,6 +527,10 @@
               ⚠️ Asegúrese de ingresar correctamente los datos para evitar
               errores en el documento generado.
             </p>
+            <p>
+              ⚠️ Para denuncias, seleccione (DENUNCIAS..), y GENERAR SOLICITUD
+              para descargar el documento instructivo.
+            </p>
           </div>
 
           <div class="plantilla-selection">
@@ -539,7 +543,8 @@
           <div id="camposFormulario">
             <div class="campo">
               <label
-                >📝 SOLICITUD / RENOVACION <span class="required">*</span></label
+                >📝 SOLICITUD / RENOVACION
+                <span class="required">*</span></label
               >
               <div class="input-wrapper">
                 <input
@@ -686,7 +691,8 @@
         const modalImage = document.getElementById("modalImage");
         const modalCaption = document.getElementById("modalCaption");
 
-        const DENUNCIA_NOMBRE = "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx";
+        const DENUNCIA_NOMBRE =
+          "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx";
 
         const LIMITS = {
           solicitud: 10,
@@ -736,24 +742,26 @@
 
         function actualizarEstadoCamposDenuncia() {
           const esDenuncia = esPlantillaDenuncia();
-          
+
           // Obtener todos los contenedores de campos
-          const campos = camposFormulario.querySelectorAll('.campo, .row-2cols');
-          
-          campos.forEach(campo => {
+          const campos =
+            camposFormulario.querySelectorAll(".campo, .row-2cols");
+
+          campos.forEach((campo) => {
             if (esDenuncia) {
-              campo.classList.add('disabled-field');
+              campo.classList.add("disabled-field");
             } else {
-              campo.classList.remove('disabled-field');
+              campo.classList.remove("disabled-field");
             }
           });
-          
+
           // Limpiar validación de campos vacíos si es denuncia
           if (esDenuncia) {
             // Remover clases empty-field de todos los inputs
-            const allInputs = camposFormulario.querySelectorAll('input, textarea');
-            allInputs.forEach(input => {
-              input.classList.remove('empty-field');
+            const allInputs =
+              camposFormulario.querySelectorAll("input, textarea");
+            allInputs.forEach((input) => {
+              input.classList.remove("empty-field");
             });
           } else {
             // Si no es denuncia, volver a marcar campos vacíos
@@ -878,7 +886,7 @@
           if (esPlantillaDenuncia()) {
             return;
           }
-          
+
           const fields = [
             { element: solicitudInput, value: solicitudInput.value.trim() },
             { element: repInput, value: repInput.value.trim() },
@@ -1012,7 +1020,7 @@
               `✅ Plantilla "${getDisplayNameFromFile(nombreCompleto)}" cargada.`,
               "success",
             );
-            
+
             // Actualizar estado del botón según el tipo de plantilla
             if (esPlantillaDenuncia()) {
               generarBtn.disabled = false;
@@ -1120,7 +1128,7 @@
 
         async function generarWord() {
           const esDenuncia = esPlantillaDenuncia();
-          
+
           // Validar campos según el tipo de plantilla
           if (!esDenuncia) {
             // Validación normal para plantillas que no son denuncia
@@ -1151,9 +1159,14 @@
             if (!direccion) direccion = "DIRECCIÓN NO ESPECIFICADA";
 
             // Verificar campos obligatorios
-            if (!solicitudInput.value.trim() || !repInput.value.trim() || 
-                !cedInput.value.trim() || !empresaInput.value.trim() || 
-                !rifInput.value.trim() || !direccionInput.value.trim()) {
+            if (
+              !solicitudInput.value.trim() ||
+              !repInput.value.trim() ||
+              !cedInput.value.trim() ||
+              !empresaInput.value.trim() ||
+              !rifInput.value.trim() ||
+              !direccionInput.value.trim()
+            ) {
               setStatus("❌ Complete todos los campos obligatorios", "error");
               return;
             }
@@ -1239,11 +1252,14 @@
 
               // Crear blob a partir del buffer existente
               const nuevoBlob = new Blob([plantillaBuffer], {
-                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
               });
 
               window.saveAs(nuevoBlob, nombreArchivo);
-              setStatus(`✅ DOCUMENTO DE DENUNCIA GENERADO EXITOSAMENTE.`, "success");
+              setStatus(
+                `✅ DOCUMENTO DE DENUNCIA GENERADO EXITOSAMENTE.`,
+                "success",
+              );
             } catch (error) {
               console.error("❌ Error:", error);
               setStatus(`❌ Error: ${error.message}`, "error");
@@ -1296,7 +1312,10 @@
             actualizarEstadoCamposDenuncia();
             if (esPlantillaDenuncia()) {
               generarBtn.disabled = false;
-              setStatus("✅ Plantilla de DENUNCIA cargada. Puede generar el documento directamente.", "success");
+              setStatus(
+                "✅ Plantilla de DENUNCIA cargada. Puede generar el documento directamente.",
+                "success",
+              );
             } else {
               checkAllFieldsFilled();
             }
