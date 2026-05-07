@@ -440,6 +440,30 @@
         margin-top: 4px;
       }
 
+      /* Estilo para campos deshabilitados en modo denuncia */
+      .campo.disabled-field {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .campo.disabled-field label {
+        color: #94a3b8;
+      }
+
+      /* Badge de modo denuncia */
+      .denuncia-badge {
+        display: inline-block;
+        background: #dc2626;
+        color: white;
+        font-size: 0.7rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-left: 10px;
+        vertical-align: middle;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
       @media (max-width: 950px) {
         .main-container {
           flex-direction: column;
@@ -512,96 +536,98 @@
             </select>
           </div>
 
-          <div class="campo">
-            <label
-              >📝 SOLICITUD / RENOVACION <span class="required">*</span></label
-            >
-            <div class="input-wrapper">
-              <input
-                type="text"
-                id="solicitud"
-                maxlength="10"
-                placeholder="Ej: RENOVACIÓN, SOLICITUD"
-              />
-            </div>
-          </div>
-
-          <div class="campo">
-            <label
-              >🧑‍⚖️ REPRESENTANTE LEGAL <span class="required">*</span></label
-            >
-            <div class="input-wrapper">
-              <input
-                type="text"
-                id="representante"
-                maxlength="50"
-                placeholder="Nombre completo del representante legal"
-              />
-            </div>
-            <div class="char-counter" id="representanteCounter">
-              0 / 50 caracteres
-            </div>
-          </div>
-
-          <div class="campo">
-            <label
-              >🆔 CÉDULA DE IDENTIDAD <span class="required">*</span></label
-            >
-            <div class="input-wrapper">
-              <input
-                type="text"
-                id="cedula"
-                maxlength="13"
-                placeholder="Ej: V-12345678, E-123456789"
-              />
-            </div>
-          </div>
-
-          <div class="row-2cols">
-            <div>
+          <div id="camposFormulario">
+            <div class="campo">
               <label
-                >🏢 EMPRESA / RAZÓN SOCIAL
-                <span class="required">*</span></label
+                >📝 SOLICITUD / RENOVACION <span class="required">*</span></label
               >
-              <div class="input-wrapper">
-                <textarea
-                  id="empresa"
-                  rows="2"
-                  maxlength="100"
-                  placeholder="Razón social completa de la empresa"
-                ></textarea>
-              </div>
-              <div class="char-counter" id="empresaCounter">
-                0 / 100 caracteres
-              </div>
-            </div>
-            <div>
-              <label>📑 RIF <span class="required">*</span></label>
               <div class="input-wrapper">
                 <input
                   type="text"
-                  id="rif"
-                  maxlength="12"
-                  placeholder="Ej: J-12345678-9, V-12345678-9"
+                  id="solicitud"
+                  maxlength="10"
+                  placeholder="Ej: RENOVACIÓN, SOLICITUD"
                 />
               </div>
             </div>
-          </div>
 
-          <div class="campo">
-            <label
-              >📍 DIRECCIÓN DEL LOCAL <span class="required">*</span></label
-            >
-            <div class="input-wrapper">
-              <textarea
-                id="direccion"
-                rows="3"
-                maxlength="250"
-                placeholder="Ingrese la dirección completa del local comercial"
-              ></textarea>
+            <div class="campo">
+              <label
+                >🧑‍⚖️ REPRESENTANTE LEGAL <span class="required">*</span></label
+              >
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="representante"
+                  maxlength="50"
+                  placeholder="Nombre completo del representante legal"
+                />
+              </div>
+              <div class="char-counter" id="representanteCounter">
+                0 / 50 caracteres
+              </div>
             </div>
-            <div class="char-counter" id="direccionCounter">
-              0 / 250 caracteres
+
+            <div class="campo">
+              <label
+                >🆔 CÉDULA DE IDENTIDAD <span class="required">*</span></label
+              >
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="cedula"
+                  maxlength="13"
+                  placeholder="Ej: V-12345678, E-123456789"
+                />
+              </div>
+            </div>
+
+            <div class="row-2cols">
+              <div>
+                <label
+                  >🏢 EMPRESA / RAZÓN SOCIAL
+                  <span class="required">*</span></label
+                >
+                <div class="input-wrapper">
+                  <textarea
+                    id="empresa"
+                    rows="2"
+                    maxlength="100"
+                    placeholder="Razón social completa de la empresa"
+                  ></textarea>
+                </div>
+                <div class="char-counter" id="empresaCounter">
+                  0 / 100 caracteres
+                </div>
+              </div>
+              <div>
+                <label>📑 RIF <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="rif"
+                    maxlength="12"
+                    placeholder="Ej: J-12345678-9, V-12345678-9"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="campo">
+              <label
+                >📍 DIRECCIÓN DEL LOCAL <span class="required">*</span></label
+              >
+              <div class="input-wrapper">
+                <textarea
+                  id="direccion"
+                  rows="3"
+                  maxlength="250"
+                  placeholder="Ingrese la dirección completa del local comercial"
+                ></textarea>
+              </div>
+              <div class="char-counter" id="direccionCounter">
+                0 / 250 caracteres
+              </div>
             </div>
           </div>
 
@@ -654,10 +680,13 @@
           "representanteCounter",
         );
         const direccionCounter = document.getElementById("direccionCounter");
+        const camposFormulario = document.getElementById("camposFormulario");
 
         const modal = document.getElementById("imageModal");
         const modalImage = document.getElementById("modalImage");
         const modalCaption = document.getElementById("modalCaption");
+
+        const DENUNCIA_NOMBRE = "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx";
 
         const LIMITS = {
           solicitud: 10,
@@ -699,6 +728,37 @@
         function getDisplayNameFromFile(fileName) {
           if (!fileName) return "";
           return fileName.replace(/\.docx$/i, "");
+        }
+
+        function esPlantillaDenuncia() {
+          return plantillaSelect.value === DENUNCIA_NOMBRE;
+        }
+
+        function actualizarEstadoCamposDenuncia() {
+          const esDenuncia = esPlantillaDenuncia();
+          
+          // Obtener todos los contenedores de campos
+          const campos = camposFormulario.querySelectorAll('.campo, .row-2cols');
+          
+          campos.forEach(campo => {
+            if (esDenuncia) {
+              campo.classList.add('disabled-field');
+            } else {
+              campo.classList.remove('disabled-field');
+            }
+          });
+          
+          // Limpiar validación de campos vacíos si es denuncia
+          if (esDenuncia) {
+            // Remover clases empty-field de todos los inputs
+            const allInputs = camposFormulario.querySelectorAll('input, textarea');
+            allInputs.forEach(input => {
+              input.classList.remove('empty-field');
+            });
+          } else {
+            // Si no es denuncia, volver a marcar campos vacíos
+            markEmptyFields();
+          }
         }
 
         function updateEmpresaCounter() {
@@ -784,6 +844,14 @@
           }
         }
 
+        function validarCamposDenuncia() {
+          // Para la plantilla de denuncia, siempre retorna true
+          if (esPlantillaDenuncia()) {
+            return true;
+          }
+          return checkAllFieldsFilled();
+        }
+
         function checkAllFieldsFilled() {
           const solicitud = solicitudInput.value.trim();
           const representante = repInput.value.trim();
@@ -806,6 +874,11 @@
         }
 
         function markEmptyFields() {
+          // Si es plantilla de denuncia, no marcar campos vacíos
+          if (esPlantillaDenuncia()) {
+            return;
+          }
+          
           const fields = [
             { element: solicitudInput, value: solicitudInput.value.trim() },
             { element: repInput, value: repInput.value.trim() },
@@ -856,7 +929,11 @@
           inputs.forEach((input) => {
             input.element.addEventListener("input", () => {
               enforceLimit(input.element, input.limit, input.counter);
-              checkAllFieldsFilled();
+              if (!esPlantillaDenuncia()) {
+                checkAllFieldsFilled();
+              } else {
+                generarBtn.disabled = !plantillaCargada;
+              }
             });
           });
 
@@ -935,7 +1012,13 @@
               `✅ Plantilla "${getDisplayNameFromFile(nombreCompleto)}" cargada.`,
               "success",
             );
-            checkAllFieldsFilled();
+            
+            // Actualizar estado del botón según el tipo de plantilla
+            if (esPlantillaDenuncia()) {
+              generarBtn.disabled = false;
+            } else {
+              checkAllFieldsFilled();
+            }
             return true;
           } catch (error) {
             plantillaBuffer = null;
@@ -1036,85 +1119,137 @@
         }
 
         async function generarWord() {
-          let solicitud = solicitudInput.value.trim();
-          let representante = repInput.value.trim();
-          let cedula = cedInput.value.trim();
-          let empresa = empresaInput.value.trim();
-          let rif = rifInput.value.trim();
-          let direccion = direccionInput.value.trim();
+          const esDenuncia = esPlantillaDenuncia();
+          
+          // Validar campos según el tipo de plantilla
+          if (!esDenuncia) {
+            // Validación normal para plantillas que no son denuncia
+            let solicitud = solicitudInput.value.trim();
+            let representante = repInput.value.trim();
+            let cedula = cedInput.value.trim();
+            let empresa = empresaInput.value.trim();
+            let rif = rifInput.value.trim();
+            let direccion = direccionInput.value.trim();
 
-          if (solicitud.length > LIMITS.solicitud)
-            solicitud = solicitud.substring(0, LIMITS.solicitud);
-          if (representante.length > LIMITS.representante)
-            representante = representante.substring(0, LIMITS.representante);
-          if (cedula.length > LIMITS.cedula)
-            cedula = cedula.substring(0, LIMITS.cedula);
-          if (empresa.length > LIMITS.empresa)
-            empresa = empresa.substring(0, LIMITS.empresa);
-          if (rif.length > LIMITS.rif) rif = rif.substring(0, LIMITS.rif);
-          if (direccion.length > LIMITS.direccion)
-            direccion = direccion.substring(0, LIMITS.direccion);
+            if (solicitud.length > LIMITS.solicitud)
+              solicitud = solicitud.substring(0, LIMITS.solicitud);
+            if (representante.length > LIMITS.representante)
+              representante = representante.substring(0, LIMITS.representante);
+            if (cedula.length > LIMITS.cedula)
+              cedula = cedula.substring(0, LIMITS.cedula);
+            if (empresa.length > LIMITS.empresa)
+              empresa = empresa.substring(0, LIMITS.empresa);
+            if (rif.length > LIMITS.rif) rif = rif.substring(0, LIMITS.rif);
+            if (direccion.length > LIMITS.direccion)
+              direccion = direccion.substring(0, LIMITS.direccion);
 
-          if (!solicitud) solicitud = "SOLICITUD";
-          if (!representante) representante = "REPRESENTANTE";
-          if (!cedula) cedula = "V-00000000";
-          if (!empresa) empresa = "EMPRESA S.A";
-          if (!rif) rif = "J-00000000-0";
-          if (!direccion) direccion = "DIRECCIÓN NO ESPECIFICADA";
+            if (!solicitud) solicitud = "SOLICITUD";
+            if (!representante) representante = "REPRESENTANTE";
+            if (!cedula) cedula = "V-00000000";
+            if (!empresa) empresa = "EMPRESA S.A";
+            if (!rif) rif = "J-00000000-0";
+            if (!direccion) direccion = "DIRECCIÓN NO ESPECIFICADA";
 
-          const plantillaSeleccionadaCompleta = plantillaSelect.value;
-          if (!plantillaSeleccionadaCompleta) {
-            setStatus("❌ Selecciona una plantilla", "error");
-            return;
-          }
-
-          if (!plantillaBuffer) {
-            setStatus("❌ Plantilla no cargada", "error");
-            return;
-          }
-
-          setStatus("⚙️ Procesando Content Controls...", "loading");
-          generarBtn.disabled = true;
-
-          try {
-            const replacements = {
-              SOLICITUD: solicitud,
-              "REPRESENTANTE LEGAL": representante,
-              CEDULA: cedula,
-              EMPRESA: empresa,
-              RIF: rif,
-              DIRECCION: direccion,
-            };
-
-            const nuevoBlob = await reemplazarContentControls(
-              plantillaBuffer,
-              replacements,
-            );
-
-            if (!nuevoBlob || nuevoBlob.size < 1000) {
-              throw new Error("El archivo generado es demasiado pequeño");
+            // Verificar campos obligatorios
+            if (!solicitudInput.value.trim() || !repInput.value.trim() || 
+                !cedInput.value.trim() || !empresaInput.value.trim() || 
+                !rifInput.value.trim() || !direccionInput.value.trim()) {
+              setStatus("❌ Complete todos los campos obligatorios", "error");
+              return;
             }
 
-            const fecha = new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace(/:/g, "-");
-            const nombreBase = representante
-              .replace(/\s+/g, "_")
-              .substring(0, 30);
-            const nombrePlantillaDisplay = getDisplayNameFromFile(
-              plantillaSeleccionadaCompleta,
-            );
-            const nombreArchivo = `CONFORMIDAD_${nombrePlantillaDisplay}_${nombreBase}_${fecha}.docx`;
+            const plantillaSeleccionadaCompleta = plantillaSelect.value;
+            if (!plantillaSeleccionadaCompleta) {
+              setStatus("❌ Selecciona una plantilla", "error");
+              return;
+            }
 
-            window.saveAs(nuevoBlob, nombreArchivo);
-            setStatus(`✅ DOCUMENTO GENERADO EXITOSAMENTE.`, "success");
-          } catch (error) {
-            console.error("❌ Error:", error);
-            setStatus(`❌ Error: ${error.message}`, "error");
-          } finally {
-            generarBtn.disabled = false;
-            checkAllFieldsFilled();
+            if (!plantillaBuffer) {
+              setStatus("❌ Plantilla no cargada", "error");
+              return;
+            }
+
+            setStatus("⚙️ Procesando Content Controls...", "loading");
+            generarBtn.disabled = true;
+
+            try {
+              const replacements = {
+                SOLICITUD: solicitud,
+                "REPRESENTANTE LEGAL": representante,
+                CEDULA: cedula,
+                EMPRESA: empresa,
+                RIF: rif,
+                DIRECCION: direccion,
+              };
+
+              const nuevoBlob = await reemplazarContentControls(
+                plantillaBuffer,
+                replacements,
+              );
+
+              if (!nuevoBlob || nuevoBlob.size < 1000) {
+                throw new Error("El archivo generado es demasiado pequeño");
+              }
+
+              const fecha = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace(/:/g, "-");
+              const nombreBase = representante
+                .replace(/\s+/g, "_")
+                .substring(0, 30);
+              const nombrePlantillaDisplay = getDisplayNameFromFile(
+                plantillaSeleccionadaCompleta,
+              );
+              const nombreArchivo = `CONFORMIDAD_${nombrePlantillaDisplay}_${nombreBase}_${fecha}.docx`;
+
+              window.saveAs(nuevoBlob, nombreArchivo);
+              setStatus(`✅ DOCUMENTO GENERADO EXITOSAMENTE.`, "success");
+            } catch (error) {
+              console.error("❌ Error:", error);
+              setStatus(`❌ Error: ${error.message}`, "error");
+            } finally {
+              generarBtn.disabled = false;
+              checkAllFieldsFilled();
+            }
+          } else {
+            // Para la plantilla de DENUNCIA - descarga directa sin reemplazar campos
+            const plantillaSeleccionadaCompleta = plantillaSelect.value;
+            if (!plantillaSeleccionadaCompleta) {
+              setStatus("❌ Selecciona una plantilla", "error");
+              return;
+            }
+
+            if (!plantillaBuffer) {
+              setStatus("❌ Plantilla no cargada", "error");
+              return;
+            }
+
+            setStatus("⚙️ Generando documento de DENUNCIA...", "loading");
+            generarBtn.disabled = true;
+
+            try {
+              // Para denuncia, simplemente descargamos la plantilla original
+              // sin realizar reemplazo de content controls
+              const fecha = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace(/:/g, "-");
+              const nombreArchivo = `DENUNCIA_Requisitos_Inspeccion_${fecha}.docx`;
+
+              // Crear blob a partir del buffer existente
+              const nuevoBlob = new Blob([plantillaBuffer], {
+                type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              });
+
+              window.saveAs(nuevoBlob, nombreArchivo);
+              setStatus(`✅ DOCUMENTO DE DENUNCIA GENERADO EXITOSAMENTE.`, "success");
+            } catch (error) {
+              console.error("❌ Error:", error);
+              setStatus(`❌ Error: ${error.message}`, "error");
+            } finally {
+              generarBtn.disabled = false;
+            }
           }
         }
 
@@ -1144,7 +1279,7 @@
           await cargarPlantilla(primeraPlantillaCompleta);
 
           if (plantillaCargada) {
-            checkAllFieldsFilled();
+            actualizarEstadoCamposDenuncia();
             setStatus("✅ Listo. Completa todos los campos.", "success");
           }
         }
@@ -1158,7 +1293,13 @@
           generarBtn.disabled = true;
           await cargarPlantilla(nombreCompleto);
           if (plantillaCargada) {
-            checkAllFieldsFilled();
+            actualizarEstadoCamposDenuncia();
+            if (esPlantillaDenuncia()) {
+              generarBtn.disabled = false;
+              setStatus("✅ Plantilla de DENUNCIA cargada. Puede generar el documento directamente.", "success");
+            } else {
+              checkAllFieldsFilled();
+            }
           }
         });
 
