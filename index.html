@@ -426,11 +426,9 @@
         border: 1px solid #e2e8f0;
       }
 
+      /* Eliminamos la clase row-2cols ya que no la usaremos más */
       .row-2cols {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1.2rem;
+        display: none;
       }
 
       /* Estilos para contadores */
@@ -609,37 +607,36 @@
               </div>
             </div>
 
-            <div class="row-2cols">
-              <div>
-                <label
-                  >🏢 EMPRESA / RAZÓN SOCIAL
-                  <span class="required">*</span></label
-                >
-                <div class="input-wrapper">
-                  <textarea
-                    id="empresa"
-                    rows="2"
-                    maxlength="100"
-                    placeholder="Razón social completa de la empresa"
-                  ></textarea>
-                </div>
-                <div class="char-counter" id="empresaCounter">
-                  0 / 100 caracteres
-                </div>
+            <div class="campo">
+              <label
+                >🏢 EMPRESA / RAZÓN SOCIAL
+                <span class="required">*</span></label
+              >
+              <div class="input-wrapper">
+                <textarea
+                  id="empresa"
+                  rows="2"
+                  maxlength="100"
+                  placeholder="Razón social completa de la empresa"
+                ></textarea>
               </div>
-              <div>
-                <label>📑 RIF <span class="required">*</span></label>
-                <div class="input-wrapper">
-                  <input
-                    type="text"
-                    id="rif"
-                    maxlength="12"
-                    placeholder="Ej: J-12345678-9, V-12345678-9"
-                  />
-                </div>
-                <div class="char-counter hidden-counter" id="rifCounter">
-                  0 / 12 caracteres
-                </div>
+              <div class="char-counter" id="empresaCounter">
+                0 / 100 caracteres
+              </div>
+            </div>
+
+            <div class="campo">
+              <label>📑 RIF <span class="required">*</span></label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="rif"
+                  maxlength="12"
+                  placeholder="Ej: J-12345678-9, V-12345678-9"
+                />
+              </div>
+              <div class="char-counter hidden-counter" id="rifCounter">
+                0 / 12 caracteres
               </div>
             </div>
 
@@ -796,7 +793,7 @@
 
           // Obtener todos los contenedores de campos
           const campos =
-            camposFormulario.querySelectorAll(".campo, .row-2cols");
+            camposFormulario.querySelectorAll(".campo");
 
           campos.forEach((campo) => {
             if (esDenuncia) {
