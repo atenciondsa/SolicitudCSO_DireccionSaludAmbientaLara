@@ -366,8 +366,14 @@
         opacity: 0.7;
       }
 
+      .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
       button {
-        width: 100%;
+        flex: 1;
         background: linear-gradient(98deg, #1e4a6b 0%, #0f3b55 100%);
         color: white;
         border: none;
@@ -376,7 +382,6 @@
         font-weight: bold;
         border-radius: 40px;
         cursor: pointer;
-        margin-top: 10px;
         transition: all 0.2s;
         display: flex;
         align-items: center;
@@ -393,6 +398,14 @@
         opacity: 0.5;
         cursor: not-allowed;
         background: linear-gradient(98deg, #94a3b8 0%, #64748b 100%);
+      }
+
+      .btn-pdf {
+        background: linear-gradient(98deg, #c0392b 0%, #e74c3c 100%);
+      }
+
+      .btn-pdf:hover:not(:disabled) {
+        background: linear-gradient(98deg, #a93226 0%, #c0392b 100%);
       }
 
       .status {
@@ -424,11 +437,6 @@
         border-radius: 16px;
         margin-bottom: 20px;
         border: 1px solid #e2e8f0;
-      }
-
-      /* Eliminamos la clase row-2cols ya que no la usaremos más */
-      .row-2cols {
-        display: none;
       }
 
       /* Estilos para contadores */
@@ -494,6 +502,10 @@
         .form-container {
           min-width: auto;
         }
+
+        .button-group {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -530,19 +542,19 @@
               <span style="color: #dc2626">*</span>.
             </p>
             <p>
-              3. Puede visualizar los recaudos en la imagen (click para
-              ampliar).
+              3. Puede visualizar los recaudos en la imagen (clic para ampliar).
             </p>
             <p>
               4. Presione <strong>"GENERAR SOLICITUD"</strong> para descargar el
-              documento con los datos ingresados y realize su impresion.
+              documento con los datos ingresados y realice su impresión.
             </p>
+
             <p>
               ⚠️ Asegúrese de ingresar correctamente los datos para evitar
               errores en el documento generado.
             </p>
             <p>
-              ⚠️ Para denuncias, seleccione (DENUNCIAS..), y GENERAR SOLICITUD
+              ⚠️ Para denuncias, seleccione (DENUNCIAS...), y GENERAR SOLICITUD
               para descargar el documento instructivo.
             </p>
           </div>
@@ -557,7 +569,7 @@
           <div id="camposFormulario">
             <div class="campo">
               <label
-                >📝 SOLICITUD / RENOVACION
+                >📝 SOLICITUD o RENOVACIÓN
                 <span class="required">*</span></label
               >
               <div class="input-wrapper">
@@ -658,7 +670,12 @@
             </div>
           </div>
 
-          <button id="generarBtn" disabled>🔄 GENERAR SOLICITUD</button>
+          <div class="button-group">
+            <button id="generarBtn" disabled>🔄 GENERAR SOLICITUD</button>
+            <button id="generarPdfBtn" class="btn-pdf" disabled>
+              📄 GENERAR SOLICITUD PDF
+            </button>
+          </div>
 
           <div id="statusMsg" class="status status-loading">
             ⏳ Cargando librerías y lista de plantillas...
@@ -687,8 +704,16 @@
       <div class="modal-caption" id="modalCaption"></div>
     </div>
 
+    <!-- Dependencias para generar documentos -->
     <script src="assets/js/pizzip.min.js"></script>
     <script src="assets/js/FileSaver.min.js"></script>
+
+    <!-- Dependencias para generar PDF (html2canvas + jsPDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Generador de PDF con recaudos específicos -->
+    <script src="assets/js/pdf-generator.js"></script>
 
     <script>
       (function () {
@@ -699,6 +724,7 @@
         const rifInput = document.getElementById("rif");
         const direccionInput = document.getElementById("direccion");
         const generarBtn = document.getElementById("generarBtn");
+        const generarPdfBtn = document.getElementById("generarPdfBtn");
         const statusDiv = document.getElementById("statusMsg");
         const plantillaSelect = document.getElementById("plantillaSelect");
         const imgContainer = document.getElementById("imgContainer");
@@ -710,7 +736,9 @@
 
         // Contadores (solo los que se mostrarán)
         const empresaCounter = document.getElementById("empresaCounter");
-        const representanteCounter = document.getElementById("representanteCounter");
+        const representanteCounter = document.getElementById(
+          "representanteCounter",
+        );
         const direccionCounter = document.getElementById("direccionCounter");
 
         const DENUNCIA_NOMBRE =
@@ -756,15 +784,15 @@
         // Función para actualizar un contador individual con colores
         function updateCounter(input, counterElement, limit) {
           if (!counterElement) return;
-          
+
           const len = input.value.length;
           const remaining = limit - len;
-          
+
           counterElement.textContent = `${len} / ${limit} caracteres`;
-          
+
           // Cambiar color según la cantidad de caracteres restantes
           counterElement.classList.remove("warning", "danger");
-          
+
           if (remaining <= 0) {
             counterElement.classList.add("danger");
           } else if (remaining <= 5) {
@@ -792,8 +820,7 @@
           const esDenuncia = esPlantillaDenuncia();
 
           // Obtener todos los contenedores de campos
-          const campos =
-            camposFormulario.querySelectorAll(".campo");
+          const campos = camposFormulario.querySelectorAll(".campo");
 
           campos.forEach((campo) => {
             if (esDenuncia) {
@@ -894,7 +921,17 @@
             rif !== "" &&
             direccion !== "";
 
-          generarBtn.disabled = !(allFilled && plantillaCargada);
+          // *** LÓGICA MODIFICADA: Solo habilitar PDF si los campos están llenos ***
+          generarPdfBtn.disabled = !(allFilled && plantillaCargada);
+          
+          // *** BOTÓN DE WORD: Solo se habilita si es DENUNCIA y la plantilla está cargada ***
+          // En caso de que sea DENUNCIA, se habilita aunque los campos estén vacíos/deshabilitados
+          if (esPlantillaDenuncia()) {
+            generarBtn.disabled = !plantillaCargada;
+          } else {
+            generarBtn.disabled = true; // Siempre deshabilitado para no-denuncias
+          }
+          
           markEmptyFields();
           return allFilled;
         }
@@ -943,13 +980,16 @@
           inputs.forEach((input) => {
             input.element.addEventListener("input", () => {
               enforceLimit(input.element, input.limit);
+              // Actualizar estado de botones según el tipo de plantilla
               if (!esPlantillaDenuncia()) {
                 checkAllFieldsFilled();
               } else {
+                // Si es denuncia: Word se habilita solo si plantilla cargada; PDF se deshabilita
                 generarBtn.disabled = !plantillaCargada;
+                generarPdfBtn.disabled = true; // PDF deshabilitado en modo denuncia
               }
             });
-            
+
             // También escuchar el evento 'keyup' para asegurar que los contadores se actualicen
             input.element.addEventListener("keyup", () => {
               updateVisibleCounters();
@@ -1031,9 +1071,13 @@
               "success",
             );
 
+            // Aplicar lógica de botones según sea o no denuncia
             if (esPlantillaDenuncia()) {
-              generarBtn.disabled = false;
+              generarBtn.disabled = false; // Habilitar Word
+              generarPdfBtn.disabled = true; // Deshabilitar PDF para denuncias
             } else {
+              generarBtn.disabled = true; // Deshabilitar Word para no-denuncias
+              // El PDF se habilitará solo cuando los campos estén llenos
               checkAllFieldsFilled();
             }
             return true;
@@ -1045,6 +1089,7 @@
               "error",
             );
             generarBtn.disabled = true;
+            generarPdfBtn.disabled = true;
             return false;
           }
         }
@@ -1139,98 +1184,10 @@
           const esDenuncia = esPlantillaDenuncia();
 
           if (!esDenuncia) {
-            let solicitud = solicitudInput.value.trim();
-            let representante = repInput.value.trim();
-            let cedula = cedInput.value.trim();
-            let empresa = empresaInput.value.trim();
-            let rif = rifInput.value.trim();
-            let direccion = direccionInput.value.trim();
-
-            if (solicitud.length > LIMITS.solicitud)
-              solicitud = solicitud.substring(0, LIMITS.solicitud);
-            if (representante.length > LIMITS.representante)
-              representante = representante.substring(0, LIMITS.representante);
-            if (cedula.length > LIMITS.cedula)
-              cedula = cedula.substring(0, LIMITS.cedula);
-            if (empresa.length > LIMITS.empresa)
-              empresa = empresa.substring(0, LIMITS.empresa);
-            if (rif.length > LIMITS.rif) rif = rif.substring(0, LIMITS.rif);
-            if (direccion.length > LIMITS.direccion)
-              direccion = direccion.substring(0, LIMITS.direccion);
-
-            if (!solicitud) solicitud = "SOLICITUD";
-            if (!representante) representante = "REPRESENTANTE";
-            if (!cedula) cedula = "V-00000000";
-            if (!empresa) empresa = "EMPRESA S.A";
-            if (!rif) rif = "J-00000000-0";
-            if (!direccion) direccion = "DIRECCIÓN NO ESPECIFICADA";
-
-            if (
-              !solicitudInput.value.trim() ||
-              !repInput.value.trim() ||
-              !cedInput.value.trim() ||
-              !empresaInput.value.trim() ||
-              !rifInput.value.trim() ||
-              !direccionInput.value.trim()
-            ) {
-              setStatus("❌ Complete todos los campos obligatorios", "error");
-              return;
-            }
-
-            const plantillaSeleccionadaCompleta = plantillaSelect.value;
-            if (!plantillaSeleccionadaCompleta) {
-              setStatus("❌ Selecciona una plantilla", "error");
-              return;
-            }
-
-            if (!plantillaBuffer) {
-              setStatus("❌ Plantilla no cargada", "error");
-              return;
-            }
-
-            setStatus("⚙️ Procesando Content Controls...", "loading");
-            generarBtn.disabled = true;
-
-            try {
-              const replacements = {
-                SOLICITUD: solicitud,
-                "REPRESENTANTE LEGAL": representante,
-                CEDULA: cedula,
-                EMPRESA: empresa,
-                RIF: rif,
-                DIRECCION: direccion,
-              };
-
-              const nuevoBlob = await reemplazarContentControls(
-                plantillaBuffer,
-                replacements,
-              );
-
-              if (!nuevoBlob || nuevoBlob.size < 1000) {
-                throw new Error("El archivo generado es demasiado pequeño");
-              }
-
-              const fecha = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace(/:/g, "-");
-              const nombreBase = representante
-                .replace(/\s+/g, "_")
-                .substring(0, 30);
-              const nombrePlantillaDisplay = getDisplayNameFromFile(
-                plantillaSeleccionadaCompleta,
-              );
-              const nombreArchivo = `CONFORMIDAD_${nombrePlantillaDisplay}_${nombreBase}_${fecha}.docx`;
-
-              window.saveAs(nuevoBlob, nombreArchivo);
-              setStatus(`✅ DOCUMENTO GENERADO EXITOSAMENTE.`, "success");
-            } catch (error) {
-              console.error("❌ Error:", error);
-              setStatus(`❌ Error: ${error.message}`, "error");
-            } finally {
-              generarBtn.disabled = false;
-              checkAllFieldsFilled();
-            }
+            // Este bloque ya no debería ejecutarse porque el botón está deshabilitado, 
+            // pero lo dejamos por seguridad.
+            setStatus("❌ Esta función solo está disponible para la plantilla de DENUNCIAS.", "error");
+            return;
           } else {
             const plantillaSeleccionadaCompleta = plantillaSelect.value;
             if (!plantillaSeleccionadaCompleta) {
@@ -1245,6 +1202,7 @@
 
             setStatus("⚙️ Generando documento de DENUNCIA...", "loading");
             generarBtn.disabled = true;
+            generarPdfBtn.disabled = true;
 
             try {
               const fecha = new Date()
@@ -1267,6 +1225,8 @@
               setStatus(`❌ Error: ${error.message}`, "error");
             } finally {
               generarBtn.disabled = false;
+              // Tras generar, volver a aplicar reglas (denuncia: PDF deshabilitado)
+              generarPdfBtn.disabled = true;
             }
           }
         }
@@ -1278,6 +1238,7 @@
           if (!pizzipOk || !saveAsOk) {
             setStatus("❌ Error: Librerías no cargadas", "error");
             generarBtn.disabled = true;
+            generarPdfBtn.disabled = true;
             return;
           }
 
@@ -1289,6 +1250,7 @@
           if (plantillasDisponibles.length === 0) {
             setStatus("❌ No hay plantillas disponibles", "error");
             generarBtn.disabled = true;
+            generarPdfBtn.disabled = true;
             return;
           }
 
@@ -1309,22 +1271,101 @@
           await cargarImagenPreview(nombreCompleto);
 
           generarBtn.disabled = true;
+          generarPdfBtn.disabled = true;
           await cargarPlantilla(nombreCompleto);
           if (plantillaCargada) {
             actualizarEstadoCamposDenuncia();
             if (esPlantillaDenuncia()) {
               generarBtn.disabled = false;
+              generarPdfBtn.disabled = true; // PDF deshabilitado en denuncias
               setStatus(
-                "✅ Plantilla de DENUNCIA cargada. Puede generar el documento directamente.",
+                "✅ Plantilla de DENUNCIA cargada. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.",
                 "success",
               );
             } else {
+              // Habilitar solo PDF cuando los campos estén completos
               checkAllFieldsFilled();
             }
           }
         });
 
         generarBtn.addEventListener("click", generarWord);
+
+        // Evento para el botón PDF - usa el nombre de la plantilla seleccionada
+        generarPdfBtn.addEventListener("click", function () {
+          if (typeof window.generarCSOPDF === "function") {
+            // Verificar que los campos estén completos (si no es denuncia)
+            if (!esPlantillaDenuncia()) {
+              const solicitud = solicitudInput.value.trim();
+              const representante = repInput.value.trim();
+              const cedula = cedInput.value.trim();
+              const empresa = empresaInput.value.trim();
+              const rif = rifInput.value.trim();
+              const direccion = direccionInput.value.trim();
+
+              if (
+                !solicitud ||
+                !representante ||
+                !cedula ||
+                !empresa ||
+                !rif ||
+                !direccion
+              ) {
+                setStatus(
+                  "❌ Complete todos los campos obligatorios antes de generar el PDF",
+                  "error",
+                );
+                return;
+              }
+            } else {
+              // Si es denuncia, el PDF no debería estar disponible, pero por si acaso:
+              setStatus("❌ La generación de PDF no está disponible para la plantilla de DENUNCIAS. Use el botón GENERAR SOLICITUD.", "error");
+              return;
+            }
+
+            // Obtener datos del formulario
+            const datosFormulario = {
+              solicitud: solicitudInput.value.trim() || "SOLICITUD",
+              representante: repInput.value.trim() || "REPRESENTANTE LEGAL",
+              cedula: cedInput.value.trim() || "V-00000000",
+              empresa: empresaInput.value.trim() || "EMPRESA S.A.",
+              rif: rifInput.value.trim() || "J-00000000-0",
+              direccion:
+                direccionInput.value.trim() || "DIRECCIÓN NO ESPECIFICADA",
+            };
+
+            // Obtener el nombre completo de la plantilla (valor del select)
+            const plantillaSeleccionada = plantillaSelect.value;
+
+            if (!plantillaSeleccionada) {
+              setStatus("❌ Seleccione una plantilla primero", "error");
+              return;
+            }
+
+            setStatus(
+              "📄 Generando PDF (tamaño carta, márgenes 1.5cm)...",
+              "loading",
+            );
+
+            // Llamar a la función del PDF con el nombre completo de la plantilla
+            window.generarCSOPDF(datosFormulario, plantillaSeleccionada);
+
+            // Restaurar mensaje después de un tiempo
+            setTimeout(() => {
+              if (!esPlantillaDenuncia()) {
+                setStatus("✅ Listo. Puede continuar.", "success");
+              } else {
+                setStatus("✅ Plantilla de DENUNCIA cargada.", "success");
+              }
+            }, 3000);
+          } else {
+            setStatus(
+              "❌ Error: Generador de PDF no disponible. Verifique que pdf-generator.js esté cargado correctamente.",
+              "error",
+            );
+          }
+        });
+
         inicializar();
       })();
     </script>
