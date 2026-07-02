@@ -16,6 +16,7 @@ const mapeoNombresPlantilla = {
   "Conformidad Sanitaria De Ocupación Para Granjas.docx": "Conformidad Sanitaria De Ocupación Para Granjas",
   "Conformidad Sanitaria De Ocupación Para Urbanismos Y Edificaciones.docx": "Conformidad Sanitaria De Ocupación Para Urbanismos Y Edificaciones",
   "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos.docx": "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos",
+  "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario.docx": "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario",
   "Conformidad Sanitaria De Permiso Del Uso Del Agua Proveniente De Pozo Perforado.docx": "Conformidad Sanitaria De Permiso Del Uso Del Agua Proveniente De Pozo Perforado",
   "Conformidad Sanitaria De Permiso De Operación De Sistemas De Tratamiento De Aguas Residuales.docx": "Conformidad Sanitaria De Permiso De Operación De Sistemas De Tratamiento De Aguas Residuales",
   "Conformidad Sanitaria Para Revisión De Proyectos De Urbanismo Y Edificaciones.docx": "Conformidad Sanitaria Para Revisión De Proyectos De Urbanismo Y Edificaciones",
@@ -31,6 +32,7 @@ const mapeoNombresPlantilla = {
   "Conformidad Sanitaria De Ocupación Para Granjas": "Conformidad Sanitaria De Ocupación Para Granjas",
   "Conformidad Sanitaria De Ocupación Para Urbanismos Y Edificaciones": "Conformidad Sanitaria De Ocupación Para Urbanismos Y Edificaciones",
   "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos": "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos",
+  "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario": "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario",
   "Conformidad Sanitaria De Permiso Del Uso Del Agua Proveniente De Pozo Perforado": "Conformidad Sanitaria De Permiso Del Uso Del Agua Proveniente De Pozo Perforado",
   "Conformidad Sanitaria De Permiso De Operación De Sistemas De Tratamiento De Aguas Residuales": "Conformidad Sanitaria De Permiso De Operación De Sistemas De Tratamiento De Aguas Residuales",
   "Conformidad Sanitaria Para Revisión De Proyectos De Urbanismo Y Edificaciones": "Conformidad Sanitaria Para Revisión De Proyectos De Urbanismo Y Edificaciones",
@@ -50,7 +52,10 @@ function determinarTipoCSO(nombrePlantilla) {
     if (clave.length > 5 && nombreUpper.includes(clave.toUpperCase())) return valor;
   }
   if (nombreUpper.includes("GRANJA")) return "Conformidad Sanitaria De Ocupación Para Granjas";
-  if (nombreUpper.includes("VEHICULO") || nombreUpper.includes("TRANSPORTE")) return "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos";
+  if (nombreUpper.includes("VEHICULO") || nombreUpper.includes("TRANSPORTE")) {
+    if (nombreUpper.includes("FUNERARIO")) return "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario";
+    return "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares Que Transporten Desechos Generados En Establecimientos De Salud Y Desechos Cárnicos";
+  }
   if (nombreUpper.includes("URBANISMO") || nombreUpper.includes("EDIFICACION")) return "Conformidad Sanitaria De Ocupación Para Urbanismos Y Edificaciones";
   if (nombreUpper.includes("AGUA") || nombreUpper.includes("RESIDUAL")) return "Conformidad Sanitaria De Permiso De Operación De Sistemas De Tratamiento De Aguas Residuales";
   if (nombreUpper.includes("POZO") && nombreUpper.includes("USO")) return "Conformidad Sanitaria De Permiso Del Uso Del Agua Proveniente De Pozo Perforado";
@@ -95,6 +100,24 @@ const recaudosPorTipo = {
       "Copia del convenios y/o contratos para la disposición final de los desechos transportados.",
       "Anexar el listado de las empresas a las cuales suministra el servicio de transporte.",
       "Copia del permiso anterior en caso de ser Renovación.",
+      "Para retirar, consignar (2) timbres fiscales de 1 U.T.",
+      "NOTA: La unidad vehicular deberá ser presentada previa planificación con la autoridad sanitaria de esta dirección para realizar la correspondiente inspección.",
+    ],
+  },
+  "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario": {
+    titulo: "REQUISITOS PARA CONFORMIDAD SANITARIA DE OCUPACIÓN PARA UNIDADES VEHICULARES DE TRANSPORTE FUNERARIO",
+    lista: [
+      "Realizar la solicitud en papel simple con (1) timbre de 0,15 U.T. dirigida a la Dra. Alexandra González. Directora de Salud Ambiental.",
+      "Consignar todos los documentos debidamente foliados en carpeta marrón tipo oficio con gancho, separadores.",
+      "Cedula de Identidad del propietario.",
+      "Título de propiedad del vehículo o traspaso.",
+      "Cedula de Identidad y licencia del chofer del vehículo.",
+      "RIF de la empresa.",
+      "Registro de la Empresa.",
+      "Cedula de Identidad del Representante Legal de la empresa.",
+      "Constancia de Fumigación.",
+      "Conformidad Sanitaria de Ocupación de la Funeraria Adscrita.",
+      "Fotos del vehículo.",
       "Para retirar, consignar (2) timbres fiscales de 1 U.T.",
       "NOTA: La unidad vehicular deberá ser presentada previa planificación con la autoridad sanitaria de esta dirección para realizar la correspondiente inspección.",
     ],
