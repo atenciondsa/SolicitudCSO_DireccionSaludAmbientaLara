@@ -481,7 +481,7 @@
         display: none;
       }
 
-      /* Estilo para campos deshabilitados en modo especial (Denuncia o Salud Radiologica) */
+      /* Estilo para campos deshabilitados SOLO para DENUNCIAS */
       .campo.disabled-field {
         opacity: 0.5;
         pointer-events: none;
@@ -489,6 +489,12 @@
 
       .campo.disabled-field label {
         color: #94a3b8;
+      }
+
+      .campo.disabled-field input,
+      .campo.disabled-field textarea {
+        background-color: #f1f5f9;
+        border-color: #cbd5e1;
       }
 
       /* Badge de modo especial */
@@ -581,6 +587,10 @@
               ⚠️ Para DENUNCIAS, seleccione (DENUNCIAS) y use el botón GENERAR
               SOLICITUD para descargar el documento instructivo (sin necesidad
               de llenar campos).
+            </p>
+            <p>
+              ⚠️ Para SALUD RADIOLÓGICA, use el botón GENERAR SOLICITUD PDF para
+              generar el documento con los recaudos.
             </p>
           </div>
 
@@ -766,15 +776,17 @@
         );
         const direccionCounter = document.getElementById("direccionCounter");
 
-        // Nombres exactos de plantillas que NO requieren llenar campos
+        // Nombres exactos de plantillas que NO requieren llenar campos (SOLO DENUNCIAS)
         const PLANTILLAS_SIN_CAMPOS = [
-          "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx",
-          "Requisitos Salud Radiologica (RIMFRI, CONFORMIDAD DE AMBIENTE, CONFORMIDAD DE FUNCIONAMIENTO).docx",
+          "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx"
         ];
 
-        // Nombre de la plantilla de Salud Radiológica (para sombreado)
-        const NOMBRE_SALUD_RADIOLOGICA =
-          "Requisitos Salud Radiologica (RIMFRI, CONFORMIDAD DE AMBIENTE, CONFORMIDAD DE FUNCIONAMIENTO).docx";
+        // Nombres de plantillas de Salud Radiológica que SÍ requieren llenar campos y usar PDF
+        const PLANTILLAS_SALUD_RADIOLOGICA = [
+          "Requisitos Salud Radiologica (Conformidad Sanitaria De Ambiente Radiologico).docx",
+          "Requisitos Salud Radiologica (Conformidad Sanitaria De Funcionamiento Radiologico).docx",
+          "Requisitos Salud Radiologica (Rimfri).docx"
+        ];
 
         const LIMITS = {
           solicitud: 10,
@@ -844,8 +856,20 @@
           return fileName.replace(/\.docx$/i, "");
         }
 
+        // Verificar si es plantilla que NO requiere llenar campos (solo DENUNCIAS)
         function esPlantillaSinCampos() {
           return PLANTILLAS_SIN_CAMPOS.includes(plantillaSelect.value);
+        }
+
+        // Verificar si es plantilla de Salud Radiológica (requiere llenar campos y genera PDF)
+        function esPlantillaSaludRadiologica() {
+          return PLANTILLAS_SALUD_RADIOLOGICA.includes(plantillaSelect.value);
+        }
+
+        // Verificar si es una plantilla que permite generar Word (solo DENUNCIAS)
+        function esPlantillaGenerableWord() {
+          const valor = plantillaSelect.value;
+          return PLANTILLAS_SIN_CAMPOS.includes(valor);
         }
 
         function actualizarEstadoCamposEspeciales() {
@@ -856,8 +880,16 @@
 
           campos.forEach((campo) => {
             if (esSinCampos) {
+              // SOLO para DENUNCIAS: deshabilitar campos
               campo.classList.add("disabled-field");
+              // Limpiar campos cuando se deshabilitan
+              const inputs = campo.querySelectorAll("input, textarea");
+              inputs.forEach((input) => {
+                input.value = "";
+                input.classList.remove("empty-field");
+              });
             } else {
+              // Para Salud Radiológica y otras: campos habilitados
               campo.classList.remove("disabled-field");
             }
           });
@@ -882,7 +914,7 @@
           ) {
             return "DENUNCIA";
           }
-          if (valor === NOMBRE_SALUD_RADIOLOGICA) {
+          if (PLANTILLAS_SALUD_RADIOLOGICA.includes(valor)) {
             return "SALUD RADIOLÓGICA";
           }
           return null;
@@ -920,7 +952,7 @@
                             <img src="${urlImg}" alt="${nombreSinExtension}" 
                                  style="max-width:100%; max-height:450px; border-radius:16px; cursor:pointer;"
                                  onclick="openModal('${currentImageUrl}', '${nombreSinExtension}')"
-                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'no-img\'><span class=\'no-img-icon\'>❌</span><br>Error al cargar imagen</div>'">
+                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-img\\'><span class=\\'no-img-icon\\'>❌</span><br>Error al cargar imagen</div>'">
                         `;
                 imagenEncontrada = true;
                 imagenActual = nombrePlantillaCompleto;
@@ -967,18 +999,29 @@
             rif !== "" &&
             direccion !== "";
 
-          // Solo habilitar PDF si los campos están llenos y NO es plantilla sin campos
-          if (!esPlantillaSinCampos()) {
-            generarPdfBtn.disabled = !(allFilled && plantillaCargada);
-          } else {
-            generarPdfBtn.disabled = true; // PDF deshabilitado para plantillas sin campos
-          }
+          // Lógica para habilitar/deshabilitar botones
+          const esSinCampos = esPlantillaSinCampos();
+          const esSaludRad = esPlantillaSaludRadiologica();
 
-          // BOTÓN DE WORD: Se habilita solo si es plantilla sin campos
-          if (esPlantillaSinCampos()) {
+          // BOTÓN GENERAR SOLICITUD (Word) - SOLO para DENUNCIAS
+          if (esSinCampos) {
+            // DENUNCIAS: habilitado si plantilla cargada
             generarBtn.disabled = !plantillaCargada;
           } else {
-            generarBtn.disabled = true; // Siempre deshabilitado para plantillas normales (solo PDF)
+            // SALUD RADIOLÓGICA y otras: DESHABILITADO
+            generarBtn.disabled = true;
+          }
+
+          // BOTÓN GENERAR PDF
+          if (esSinCampos) {
+            // DENUNCIAS: PDF deshabilitado
+            generarPdfBtn.disabled = true;
+          } else if (esSaludRad) {
+            // SALUD RADIOLÓGICA: PDF habilitado si campos llenos Y plantilla cargada
+            generarPdfBtn.disabled = !(allFilled && plantillaCargada);
+          } else {
+            // Otras plantillas: PDF habilitado si campos llenos Y plantilla cargada
+            generarPdfBtn.disabled = !(allFilled && plantillaCargada);
           }
 
           markEmptyFields();
@@ -986,6 +1029,7 @@
         }
 
         function markEmptyFields() {
+          // Si es DENUNCIAS, no marcar campos vacíos
           if (esPlantillaSinCampos()) {
             return;
           }
@@ -1029,14 +1073,8 @@
           inputs.forEach((input) => {
             input.element.addEventListener("input", () => {
               enforceLimit(input.element, input.limit);
-              // Actualizar estado de botones según el tipo de plantilla
-              if (!esPlantillaSinCampos()) {
-                checkAllFieldsFilled();
-              } else {
-                // Si es plantilla sin campos: Word se habilita solo si plantilla cargada; PDF se deshabilita
-                generarBtn.disabled = !plantillaCargada;
-                generarPdfBtn.disabled = true;
-              }
+              // Actualizar estado de botones
+              checkAllFieldsFilled();
             });
 
             // También escuchar el evento 'keyup' para asegurar que los contadores se actualicen
@@ -1097,7 +1135,7 @@
               "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx"
             ) {
               displayText += " ⚠️ DENUNCIA";
-            } else if (nombreCompleto === NOMBRE_SALUD_RADIOLOGICA) {
+            } else if (PLANTILLAS_SALUD_RADIOLOGICA.includes(nombreCompleto)) {
               displayText += " ☢️ SALUD RADIOLÓGICA";
               // Agregar clase CSS para sombreado gris claro
               option.className = "salud-radiologica-option";
@@ -1130,27 +1168,26 @@
             plantillaCargada = true;
 
             const tipoEspecial = obtenerTipoMensajeEspecial();
-            if (tipoEspecial) {
+            if (tipoEspecial === "DENUNCIA") {
               setStatus(
-                `✅ Plantilla de ${tipoEspecial} cargada. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.`,
+                `✅ Plantilla de DENUNCIA cargada. Los campos han sido deshabilitados. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.`,
+                "success",
+              );
+            } else if (tipoEspecial === "SALUD RADIOLÓGICA") {
+              setStatus(
+                `✅ Plantilla de SALUD RADIOLÓGICA cargada. Complete los campos y presione GENERAR SOLICITUD PDF.`,
                 "success",
               );
             } else {
               setStatus(
-                `✅ Plantilla "${getDisplayNameFromFile(nombreCompleto)}" cargada.`,
+                `✅ Plantilla "${getDisplayNameFromFile(nombreCompleto)}" cargada. Complete los campos para generar PDF.`,
                 "success",
               );
             }
 
-            // Aplicar lógica de botones según sea o no plantilla sin campos
-            if (esPlantillaSinCampos()) {
-              generarBtn.disabled = false; // Habilitar Word
-              generarPdfBtn.disabled = true; // Deshabilitar PDF
-            } else {
-              generarBtn.disabled = true; // Deshabilitar Word para plantillas normales
-              // El PDF se habilitará solo cuando los campos estén llenos
-              checkAllFieldsFilled();
-            }
+            // Actualizar estado de botones según el tipo de plantilla
+            actualizarEstadoCamposEspeciales();
+            checkAllFieldsFilled();
             return true;
           } catch (error) {
             plantillaBuffer = null;
@@ -1252,11 +1289,12 @@
         }
 
         async function generarWord() {
+          // SOLO para DENUNCIAS
           const esSinCampos = esPlantillaSinCampos();
 
           if (!esSinCampos) {
             setStatus(
-              "❌ Esta función solo está disponible para plantillas de DENUNCIAS o REQUISITOS DE SALUD RADIOLÓGICA.",
+              "❌ Esta función solo está disponible para plantillas de DENUNCIAS.",
               "error",
             );
             return;
@@ -1273,8 +1311,7 @@
             return;
           }
 
-          const tipoEspecial = obtenerTipoMensajeEspecial() || "DOCUMENTO";
-          setStatus(`⚙️ Generando documento de ${tipoEspecial}...`, "loading");
+          setStatus(`⚙️ Generando documento de DENUNCIA...`, "loading");
           generarBtn.disabled = true;
           generarPdfBtn.disabled = true;
 
@@ -1284,27 +1321,16 @@
               .slice(0, 19)
               .replace(/:/g, "-");
 
-            let nombreArchivo = "";
-            if (
-              plantillaSeleccionadaCompleta ===
-              "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx"
-            ) {
-              nombreArchivo = `DENUNCIA_Requisitos_Inspeccion_${fecha}.docx`;
-            } else if (
-              plantillaSeleccionadaCompleta === NOMBRE_SALUD_RADIOLOGICA
-            ) {
-              nombreArchivo = `SALUD_RADIOLOGICA_Requisitos_${fecha}.docx`;
-            } else {
-              nombreArchivo = `${getDisplayNameFromFile(plantillaSeleccionadaCompleta)}_${fecha}.docx`;
-            }
+            const nombreArchivo = `DENUNCIA_Requisitos_Inspeccion_${fecha}.docx`;
 
+            // Para DENUNCIAS: enviar el archivo sin modificar
             const nuevoBlob = new Blob([plantillaBuffer], {
               type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             });
-
             window.saveAs(nuevoBlob, nombreArchivo);
+
             setStatus(
-              `✅ DOCUMENTO DE ${tipoEspecial} GENERADO EXITOSAMENTE.`,
+              `✅ DOCUMENTO DE DENUNCIA GENERADO EXITOSAMENTE.`,
               "success",
             );
           } catch (error) {
@@ -1312,8 +1338,8 @@
             setStatus(`❌ Error: ${error.message}`, "error");
           } finally {
             generarBtn.disabled = false;
-            // Tras generar, volver a aplicar reglas (plantilla sin campos: PDF deshabilitado)
-            generarPdfBtn.disabled = true;
+            // Volver a aplicar reglas de botones
+            checkAllFieldsFilled();
           }
         }
 
@@ -1364,13 +1390,22 @@
             if (esPlantillaSinCampos()) {
               generarBtn.disabled = false;
               generarPdfBtn.disabled = true;
-              const tipoEspecial = obtenerTipoMensajeEspecial();
               setStatus(
-                `✅ Plantilla de ${tipoEspecial} cargada. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.`,
+                `✅ Plantilla de DENUNCIA cargada. Los campos han sido deshabilitados. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.`,
                 "success",
               );
+            } else if (esPlantillaSaludRadiologica()) {
+              generarBtn.disabled = true;
+              generarPdfBtn.disabled = true;
+              setStatus(
+                `✅ Plantilla de SALUD RADIOLÓGICA cargada. Complete los campos para generar el PDF.`,
+                "success",
+              );
+              // Verificar campos para habilitar botones
+              checkAllFieldsFilled();
             } else {
-              // Habilitar solo PDF cuando los campos estén completos
+              // Otras plantillas: solo PDF
+              generarBtn.disabled = true;
               checkAllFieldsFilled();
             }
           }
@@ -1381,33 +1416,37 @@
         // Evento para el botón PDF - usa el nombre de la plantilla seleccionada
         generarPdfBtn.addEventListener("click", function () {
           if (typeof window.generarCSOPDF === "function") {
-            // Verificar que los campos estén completos (si no es plantilla sin campos)
-            if (!esPlantillaSinCampos()) {
-              const solicitud = solicitudInput.value.trim();
-              const representante = repInput.value.trim();
-              const cedula = cedInput.value.trim();
-              const empresa = empresaInput.value.trim();
-              const rif = rifInput.value.trim();
-              const direccion = direccionInput.value.trim();
+            // Verificar que los campos estén completos
+            const esSinCampos = esPlantillaSinCampos();
+            const esSaludRad = esPlantillaSaludRadiologica();
 
-              if (
-                !solicitud ||
-                !representante ||
-                !cedula ||
-                !empresa ||
-                !rif ||
-                !direccion
-              ) {
-                setStatus(
-                  "❌ Complete todos los campos obligatorios antes de generar el PDF",
-                  "error",
-                );
-                return;
-              }
-            } else {
-              // Si es plantilla sin campos, el PDF no debería estar disponible
+            // Para DENUNCIAS: no permitir PDF
+            if (esSinCampos) {
               setStatus(
-                "❌ La generación de PDF no está disponible para esta plantilla. Use el botón GENERAR SOLICITUD.",
+                "❌ La generación de PDF no está disponible para DENUNCIAS. Use el botón GENERAR SOLICITUD.",
+                "error",
+              );
+              return;
+            }
+
+            // Para Salud Radiológica y otras: verificar campos
+            const solicitud = solicitudInput.value.trim();
+            const representante = repInput.value.trim();
+            const cedula = cedInput.value.trim();
+            const empresa = empresaInput.value.trim();
+            const rif = rifInput.value.trim();
+            const direccion = direccionInput.value.trim();
+
+            if (
+              !solicitud ||
+              !representante ||
+              !cedula ||
+              !empresa ||
+              !rif ||
+              !direccion
+            ) {
+              setStatus(
+                "❌ Complete todos los campos obligatorios antes de generar el PDF",
                 "error",
               );
               return;
@@ -1442,7 +1481,7 @@
 
             // Restaurar mensaje después de un tiempo
             setTimeout(() => {
-              if (!esPlantillaSinCampos()) {
+              if (!esSinCampos) {
                 setStatus("✅ Listo. Puede continuar.", "success");
               }
             }, 3000);
