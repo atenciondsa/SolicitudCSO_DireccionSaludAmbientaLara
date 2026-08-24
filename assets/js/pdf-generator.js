@@ -23,6 +23,11 @@ const mapeoNombresPlantilla = {
   "Conformidad Sanitaria De Ocupación Para Dotación.docx": "Conformidad Sanitaria De Ocupación Para Dotación",
   "Conformidad Sanitaria de Revisión De Proyectos (Variables Sanitarias) De Equipos De Incineración Para Desechos Generados En Establecimiento De Salud.docx": "Conformidad Sanitaria de Revisión De Proyectos (Variables Sanitarias) De Equipos De Incineración Para Desechos Generados En Establecimiento De Salud",
   "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias.docx": "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias",
+  // NUEVOS: Salud Radiológica
+  "Requisitos Salud Radiologica (Conformidad Sanitaria De Ambiente Radiologico).docx": "Conformidad Sanitaria De Ambiente Radiologico",
+  "Requisitos Salud Radiologica (Conformidad Sanitaria De Funcionamiento Radiologico).docx": "Conformidad Sanitaria De Funcionamiento Radiologico",
+  "Requisitos Salud Radiologica (Rimfri).docx": "Requisitos Para La Solicitud De RIMFRI",
+  // Sin extensión (fallback)
   "Conformidad Sanitaria De Ocupación De Empresas, Colegios": "Conformidad Sanitaria De Ocupación De Empresas, Colegios",
   "Conformidad Sanitaria De Perforación De Pozos": "Conformidad Sanitaria De Perforación De Pozos",
   "Conformidad Sanitaria Para Variable Sanitarias De Sistemas De Tratamiento De Aguas Residuales Revisión": "Conformidad Sanitaria Para Variable Sanitarias De Sistemas De Tratamiento De Aguas Residuales Revisión",
@@ -45,12 +50,29 @@ function determinarTipoCSO(nombrePlantilla) {
   if (!nombrePlantilla) return "Conformidad Sanitaria De Ocupación Para Granjas";
   const nombreOriginal = nombrePlantilla;
   const nombreUpper = nombrePlantilla.toUpperCase();
+  
+  // Primero buscar coincidencia exacta en el mapeo
   for (const [clave, valor] of Object.entries(mapeoNombresPlantilla)) {
     if (nombreOriginal === clave) return valor;
   }
+  
+  // Búsqueda parcial
   for (const [clave, valor] of Object.entries(mapeoNombresPlantilla)) {
     if (clave.length > 5 && nombreUpper.includes(clave.toUpperCase())) return valor;
   }
+  
+  // Detección específica para Salud Radiológica
+  if (nombreUpper.includes("AMBIENTE RADIOLOGICO") || nombreUpper.includes("AMBIENTE RADIOLÓGICO")) {
+    return "Conformidad Sanitaria De Ambiente Radiologico";
+  }
+  if (nombreUpper.includes("FUNCIONAMIENTO RADIOLOGICO") || nombreUpper.includes("FUNCIONAMIENTO RADIOLÓGICO")) {
+    return "Conformidad Sanitaria De Funcionamiento Radiologico";
+  }
+  if (nombreUpper.includes("RIMFRI")) {
+    return "Requisitos Para La Solicitud De RIMFRI";
+  }
+  
+  // Detecciones existentes
   if (nombreUpper.includes("GRANJA")) return "Conformidad Sanitaria De Ocupación Para Granjas";
   if (nombreUpper.includes("VEHICULO") || nombreUpper.includes("TRANSPORTE")) {
     if (nombreUpper.includes("FUNERARIO")) return "Conformidad Sanitaria De Ocupación Para Unidades Vehiculares De Transporte Funerario";
@@ -69,6 +91,7 @@ function determinarTipoCSO(nombrePlantilla) {
   if (nombreUpper.includes("DENUNCIA") || nombreUpper.includes("INSPECCIÓN")) return "(DENUNCIAS) Requisitos Para Solicitud De Inspección Por Denuncias";
   if (nombreUpper.includes("EMPRESAS") || nombreUpper.includes("COLEGIOS")) return "Conformidad Sanitaria De Ocupación De Empresas, Colegios";
   if (nombreUpper.includes("INCINERACIÓN") || nombreUpper.includes("INCINERACION")) return "Conformidad Sanitaria de Revisión De Proyectos (Variables Sanitarias) De Equipos De Incineración Para Desechos Generados En Establecimiento De Salud";
+  
   return "Conformidad Sanitaria De Ocupación Para Granjas";
 }
 
@@ -326,6 +349,62 @@ const recaudosPorTipo = {
       "Cualquier documento adicional que respalde la denuncia.",
     ],
   },
+
+  // ==================== NUEVOS: SALUD RADIOLÓGICA ====================
+  "Conformidad Sanitaria De Ambiente Radiologico": {
+    titulo: "REQUISITOS PARA CONFORMIDAD SANITARIA DE AMBIENTE RADIOLÓGICO",
+    lista: [
+      "Ordenar 2 carpetas con separadores debidamente identificados.",
+      "Presentar la solicitud por escrito timbre fiscal de 0,02 u.t. Dirigida a la Dra. Alexandra González directora de la dirección de salud ambiental del estado Lara, con copia a la coordinación de salud radiológica.",
+      "Copia de la cédula de identidad del representante legal.",
+      "Copia del registro mercantil con sus modificaciones si las hubiera o copia de la gaceta oficial de la designación correspondiente.",
+      "Copia de RIF.",
+      "Conformidad sanitaria de ocupación otorgada por ingeniería sanitaria. Gaceta oficial nº 4044 extraordinaria del 08-09-88.",
+      "Presentación de la MEMORIA DESCRIPTIVA según capítulo 7 resolución nº 401 de fecha 24 de noviembre de 2006:",
+      "  a) Datos del responsable del ambiente, del jefe del servicio y el oficial de seguridad radiológica.",
+      "  b) Plano de ubicación del servicio a escala adecuada (1:50), donde se definan los locales vecinos y sus funciones, así como la ubicación de las fuentes, equipos y demás accesorios.",
+      "  c) Ambientes existentes e identificación de las áreas.",
+      "  d) Materiales de construcción y espesores de paredes, pisos, techos, puertas y cabinas.",
+      "  e) Cálculo de blindaje.",
+      "  f) Informe de levantamiento radiométricos de las barreras de protección.",
+      "  g) Sistemas de seguridad radiológica y física existentes en la instalación: i. Extintor de incendios, ii. Detector de humo, iii. Alarmas, panta de luz eléctrica.",
+      "  h) Sistemas de ventilación y extracción: i. Aire acondicionado u otros, ii. Especificaciones técnicas del extractor y velocidad de recambio por unidad de tiempo.",
+      "Timbre fiscal por un valor de tres (3) unidades tributarias."
+    ],
+  },
+  "Conformidad Sanitaria De Funcionamiento Radiologico": {
+    titulo: "REQUISITOS PARA CONFORMIDAD SANITARIA DE FUNCIONAMIENTO RADIOLÓGICO",
+    lista: [
+      "Ordenar 2 carpetas con separadores debidamente identificados. Ambas carpetas deben contener:",
+      "Presentar la solicitud por escrito timbre fiscal de 0,02 u.t. Dirigida a la Dra. Alexandra González directora de la dirección de salud ambiental del estado Lara, con copia a la coordinación de salud radiológica.",
+      "Permiso de importación del equipo otorgado por el Ministerio de Energía y Petróleo.",
+      "Certificado de origen del equipo.",
+      "Presentación de la MEMORIA DESCRIPTIVA según capítulo 7 resolución nº 401 de fecha 24 de noviembre de 2006.",
+      "MEMORIA DESCRIPTIVA QUE CONTENGA: Datos Administrativos: a. Datos de la Institución: Nombre, Dirección, Teléfono, Fax, e-mail. b. Responsable de la Institución. c. Responsable del equipo. d. Profesional responsable del Servicio. e. Profesional responsable de la Protección Radiológica. f. Datos del Equipo: g. Tipo de equipo y sus características. (Según NVC 218/I vigente). h. Accesorios de protección que dispone el equipo. i. Período de garantía del equipo. j. Aplicaciones médicas. k. Documentación técnica del equipo (copia).",
+      "PROGRAMA DE PROTECCIÓN RADIOLÓGICA QUE CONTENGA: (SEGÚN NORMAS VENEZOLANAS COVENIN 3299 Y 218/I VIGENTES): a. Evaluación de la Seguridad. b. Descripción de las responsabilidades de todo el personal del servicio.",
+      "VIGILANCIA RADIOLÓGICA: a. Dosimetría: tipo, laboratorio o empresa que lo realiza; periodicidad. b. Vigilancia de zona: equipo utilizado. c. Medios protectores para personal y pacientes. d. Exámenes médicos: quien los realiza y la periodicidad, establecido en la NVC 2274 vigente.",
+      "MANUAL DE PROCEDIMIENTOS.",
+      "PROGRAMA DE ASEGURAMIENTO DE LA CALIDAD, SEGÚN NORMA VENEZOLANA COVENIN 218/I VIGENTE: a. Nombre de la empresa que realiza calibración y mantenimiento: Dirección y teléfono. b. Periodicidad del servicio. c. Presentación de los protocolos de calibración y mantenimiento. d. Especifique si el Servicio Radiológico realiza control de calidad al equipo. e. Presentación de los protocolos del aseguramiento de la calidad.",
+      "DATOS DEL PERSONAL OCUPACIONALMENTE EXPUESTO: a. Apellidos y Nombre. b. Profesión u oficio. Especialidad (Registro del Ministerio de Salud, SACS). c. Cursos realizados en protección radiológica: denominación del curso e institución que lo dictó. d. Otras instituciones donde se desempeña actualmente. e. Currículum vitae de los POE, con copias de los títulos y certificados en protección radiológica.",
+      "Timbre fiscal de cinco (05) Unidades Tributarias."
+    ],
+  },
+  "Requisitos Para La Solicitud De RIMFRI": {
+    titulo: "REQUISITOS PARA LA SOLICITUD DE RIMFRI",
+    lista: [
+      "Conformidad sanitaria de ocupación empresas.",
+      "Carta de Solicitud de RIMFRI a la Dra. Alexandra González Directora de Salud Ambiental / 2 timbres fiscales de 0.01 U.T.",
+      "Planilla del RIMFRI.",
+      "Fotocopia de la Cédula del representante legal.",
+      "RIF. Vigente.",
+      "DPCU.",
+      "Registro mercantil.",
+      "Factura de compra.",
+      "Última Declaración de ISLR.",
+      "Conformidad sanitaria de ocupación empresas.",
+      "Los documentos se deben consignar en 2 carpetas, 2 marrones tipo oficio debidamente identificadas y con sus respectivos separadores."
+    ],
+  },
 };
 
 // ==================== GENERAR HTML DEL DOCUMENTO IDÉNTICO AL DISEÑO ORIGINAL ====================
@@ -353,6 +432,9 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
     titleSize = 7.5;
   }
 
+  // Verificar si es Dotación para la nota especial
+  const esDotacion = data.titulo === "REQUISITOS PARA SOLICITUD DOTACIÓN SANITARIA";
+
   let filasTabla = "";
   data.lista.forEach((item) => {
     filasTabla += `
@@ -365,10 +447,8 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
   });
 
   // NOTA CONDICIONAL: Solo para el tipo "Conformidad Sanitaria De Ocupación Para Dotación"
-  const mostrarNotaDotacion = data.titulo === "REQUISITOS PARA SOLICITUD DOTACIÓN SANITARIA";
-  
   let notaHtml = "";
-  if (mostrarNotaDotacion) {
+  if (esDotacion) {
     notaHtml = `
       <tr>
         <td colspan="3" style="padding: 4px 4px;">
@@ -569,15 +649,15 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
   <!-- ==================== SECCIÓN JURAMENTO ==================== -->
   <div class="declaracion-jurada">
     DECLARO BAJO JURAMENTO la veracidad de la información suministrada
-    y que los documentos entregados en esta solicitud de CSO:
-    <span class="line"></span>
+    y que los documentos entregados en esta solicitud de Permiso
+    <span class="line"></span>,
     son copia fiel y exacta de los originales, de probarse lo contrario,
     asumo la responsabilidad civil, penal y administrativa que corresponda.
     No me ha sido solicitado ningún pago o colaboración adicional
     a los timbres fiscales.
   </div>
   
-  <!-- ==================== SECCIÓN DECLARO ==================== -->
+  <!-- ==================== NOTA ADICIONAL ==================== -->
   <div class="nota-adicional">
     <strong>Nota:</strong> Los recaudos deben ser consignados por el representante legal, por una persona autorizada mediante poder notariado o, en su defecto, por un trabajador de la organización que presente los soportes que acrediten su vínculo laboral.
   </div>
