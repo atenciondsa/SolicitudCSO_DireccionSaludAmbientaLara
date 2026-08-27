@@ -353,6 +353,8 @@ const recaudosPorTipo = {
   // ==================== NUEVOS: SALUD RADIOLÓGICA ====================
   "Conformidad Sanitaria De Ambiente Radiologico": {
     titulo: "REQUISITOS PARA CONFORMIDAD SANITARIA DE AMBIENTE RADIOLÓGICO",
+    // Usamos el mismo título para la tabla de recaudos
+    tituloTabla: "REQUISITOS PARA CONFORMIDAD SANITARIA DE AMBIENTE RADIOLÓGICO",
     lista: [
       "Ordenar 2 carpetas con separadores debidamente identificados.",
       "Presentar la solicitud por escrito timbre fiscal de 0,02 u.t. Dirigida a la Dra. Alexandra González directora de la dirección de salud ambiental del estado Lara, con copia a la coordinación de salud radiológica.",
@@ -374,6 +376,8 @@ const recaudosPorTipo = {
   },
   "Conformidad Sanitaria De Funcionamiento Radiologico": {
     titulo: "REQUISITOS PARA CONFORMIDAD SANITARIA DE FUNCIONAMIENTO RADIOLÓGICO",
+    // Usamos el mismo título para la tabla de recaudos
+    tituloTabla: "REQUISITOS PARA CONFORMIDAD SANITARIA DE FUNCIONAMIENTO RADIOLÓGICO",
     lista: [
       "Ordenar 2 carpetas con separadores debidamente identificados. Ambas carpetas deben contener:",
       "Presentar la solicitud por escrito timbre fiscal de 0,02 u.t. Dirigida a la Dra. Alexandra González directora de la dirección de salud ambiental del estado Lara, con copia a la coordinación de salud radiológica.",
@@ -391,6 +395,8 @@ const recaudosPorTipo = {
   },
   "Requisitos Para La Solicitud De RIMFRI": {
     titulo: "REQUISITOS PARA LA SOLICITUD DE RIMFRI",
+    // Usamos el mismo título para la tabla de recaudos
+    tituloTabla: "REQUISITOS PARA LA SOLICITUD DE RIMFRI",
     lista: [
       "Conformidad sanitaria de ocupación empresas.",
       "Carta de Solicitud de RIMFRI a la Dra. Alexandra González Directora de Salud Ambiental / 2 timbres fiscales de 0.01 U.T.",
@@ -434,6 +440,20 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
 
   // Verificar si es Dotación para la nota especial
   const esDotacion = data.titulo === "REQUISITOS PARA SOLICITUD DOTACIÓN SANITARIA";
+
+  // ==================== DETERMINAR EL TEXTO DEL PERMISO PARA SALUD RADIOLÓGICA ====================
+  // Obtener el tipo de CSO a partir del título de la tabla (data.titulo)
+  const tituloTabla = data.titulo || data.tituloTabla || "";
+  let textoPermiso = "de la Conformidad Sanitaria de Ocupación del establecimiento (CSO):";
+  
+  // Detectar si es Salud Radiológica y cambiar el texto según corresponda
+  if (tituloTabla.includes("AMBIENTE RADIOLÓGICO") || tituloTabla.includes("AMBIENTE RADIOLOGICO")) {
+    textoPermiso = "de la Conformidad Sanitaria de Ambiente Radiologico:";
+  } else if (tituloTabla.includes("FUNCIONAMIENTO RADIOLÓGICO") || tituloTabla.includes("FUNCIONAMIENTO RADIOLOGICO")) {
+    textoPermiso = "de la Conformidad Sanitaria de Funcionamiento Radiologico:";
+  } else if (tituloTabla.includes("RIMFRI")) {
+    textoPermiso = "del RIMFRI:";
+  }
 
   let filasTabla = "";
   data.lista.forEach((item) => {
@@ -614,7 +634,7 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
     <p class="justify">
       Reciba un cordial saludo la presente es para solicitar ante su despacho la 
       <strong class="campo-vacio">${escapeHtml(solicitudTipo)}</strong> 
-      de la Conformidad Sanitaria de Ocupación del establecimiento (CSO): 
+      ${textoPermiso}
       <strong class="campo-vacio">${escapeHtml(empresa)}</strong><br>
       cuyo Rif: 
       <strong class="campo-vacio">${escapeHtml(rif)}</strong> 
