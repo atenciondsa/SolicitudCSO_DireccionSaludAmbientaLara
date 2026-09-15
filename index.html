@@ -373,7 +373,6 @@
       padding-left: 46px;
     }
 
-    /* Estilos específicos para el select con icono */
     .plantilla-selection select {
       padding-left: 46px;
       padding-right: 16px;
@@ -384,7 +383,6 @@
       -moz-appearance: auto;
     }
 
-    /* Ajuste para que el texto del select no se superponga al icono */
     .plantilla-selection .input-wrapper {
       position: relative;
     }
@@ -411,7 +409,6 @@
       filter: none;
     }
 
-    /* Asegurar que el select tenga padding suficiente */
     .plantilla-selection select {
       padding-left: 50px;
       width: 100%;
@@ -487,14 +484,6 @@
       opacity: 0.5;
       cursor: not-allowed;
       background: linear-gradient(98deg, #94a3b8 0%, #64748b 100%);
-    }
-
-    .btn-pdf {
-      background: linear-gradient(98deg, #c0392b 0%, #e74c3c 100%);
-    }
-
-    .btn-pdf:hover:not(:disabled) {
-      background: linear-gradient(98deg, #a93226 0%, #c0392b 100%);
     }
 
     .status {
@@ -585,6 +574,68 @@
       background: #2c7da0;
     }
 
+    /* ==================== TOAST DE NOTIFICACIÓN ==================== */
+    .toast-notificacion {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background: linear-gradient(98deg, #166534 0%, #15803d 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 99999;
+      opacity: 0;
+      transform: translateX(120%);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      max-width: 380px;
+      pointer-events: none;
+    }
+
+    .toast-notificacion.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .toast-notificacion .toast-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .toast-notificacion .toast-texto {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .toast-notificacion .toast-titulo {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .toast-notificacion .toast-mensaje {
+      font-size: 0.78rem;
+      font-weight: 400;
+      opacity: 0.95;
+      line-height: 1.3;
+    }
+
+    @media (max-width: 600px) {
+      .toast-notificacion {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+        max-width: none;
+      }
+    }
+
     @media (max-width: 950px) {
       .main-container {
         flex-direction: column;
@@ -630,29 +681,17 @@
 
         <div class="instrucciones-box">
           <h4>📘 Instrucciones de uso</h4>
-          <p>1. Seleccione la solicitud de conformidad deseada.</p>
-          <p>
-            2. Complete todos los campos obligatorios, si son requeridos
-            marcados con
-            <span style="color: #dc2626">*</span>.
-          </p>
-          <p>
-            3. Puede visualizar los recaudos en la imagen (clic para ampliar).
-          </p>
-          <p>
-            4. Presione <strong>"GENERAR SOLICITUD"</strong> para descargar el
-            documento con los datos ingresados y realice su impresión.
-          </p>
-
-          <p>
-            ⚠️ Asegúrese de ingresar correctamente los datos para evitar
-            errores en el documento generado.
-          </p>
-          <p>
-            ⚠️ Para DENUNCIAS, seleccione (DENUNCIAS) y use el botón GENERAR
-            SOLICITUD para descargar el documento instructivo (sin necesidad
-            de llenar campos).
-          </p>
+          <p>1. Seleccione el trámite o conformidad deseada.</p>
+          <p>2. Llene los campos obligatorios (<span style="color: #dc2626">*</span>). Verifique que los datos
+            ingresados estén
+            correctos.</p>
+          <p>3. Presione <strong>"GENERAR SOLICITUD PDF"</strong> para descargar e imprimir su documento.</p>
+          <p>📌 <strong>Para Denuncias:</strong> Elija la opción "DENUNCIAS" y genere la solicitud directamente, sin
+            necesidad
+            de llenar los campos.</p>
+          <p>💡 <strong>Nota:</strong> Si presenta problemas para cargar la página o descargar la planilla, presione los
+            tres
+            puntos (⋮) en la parte superior derecha y seleccione "Abrir en el navegador".</p>
         </div>
 
         <div class="plantilla-selection">
@@ -752,9 +791,6 @@
 
         <div class="button-group">
           <button id="generarBtn" disabled>🔄 GENERAR SOLICITUD</button>
-          <button id="generarPdfBtn" class="btn-pdf" disabled>
-            📄 GENERAR SOLICITUD PDF
-          </button>
         </div>
 
         <div id="statusMsg" class="status status-loading">
@@ -784,6 +820,15 @@
     <div class="modal-caption" id="modalCaption"></div>
   </div>
 
+  <!-- ==================== TOAST DE NOTIFICACIÓN ==================== -->
+  <div id="toastNotificacion" class="toast-notificacion">
+    <span class="toast-icon">✅</span>
+    <div class="toast-texto">
+      <span class="toast-titulo">Descarga Completada</span>
+      <span class="toast-mensaje" id="toastMensaje">Busque el archivo en su Directorio de Descarga.</span>
+    </div>
+  </div>
+
   <script src="assets/js/pizzip.min.js"></script>
   <script src="assets/js/FileSaver.min.js"></script>
 
@@ -801,7 +846,6 @@
       const rifInput = document.getElementById("rif");
       const direccionInput = document.getElementById("direccion");
       const generarBtn = document.getElementById("generarBtn");
-      const generarPdfBtn = document.getElementById("generarPdfBtn");
       const statusDiv = document.getElementById("statusMsg");
       const plantillaSelect = document.getElementById("plantillaSelect");
       const imgContainer = document.getElementById("imgContainer");
@@ -841,6 +885,30 @@
       let plantillaCargada = false;
       let imagenActual = null;
       let currentImageUrl = null;
+
+      // ==================== TOAST DE NOTIFICACIÓN (sin permisos) ====================
+      let toastTimeoutId = null;
+
+      function mostrarToast(mensaje) {
+        const toast = document.getElementById("toastNotificacion");
+        const toastMensaje = document.getElementById("toastMensaje");
+        if (!toast) return;
+
+        if (toastMensaje) {
+          toastMensaje.textContent =
+            mensaje || "Busque el archivo en su Directorio de Descarga.";
+        }
+
+        toast.classList.add("visible");
+
+        if (toastTimeoutId) {
+          clearTimeout(toastTimeoutId);
+        }
+
+        toastTimeoutId = setTimeout(() => {
+          toast.classList.remove("visible");
+        }, 5000);
+      }
 
       window.openModal = function (imageUrl, plantillaNombre) {
         if (!imageUrl) return;
@@ -1028,21 +1096,8 @@
           direccion !== "";
 
         const esSinCampos = esPlantillaSinCampos();
-        const esSaludRad = esPlantillaSaludRadiologica();
 
-        if (esSinCampos) {
-          generarBtn.disabled = !plantillaCargada;
-        } else {
-          generarBtn.disabled = true;
-        }
-
-        if (esSinCampos) {
-          generarPdfBtn.disabled = true;
-        } else if (esSaludRad) {
-          generarPdfBtn.disabled = !(allFilled && plantillaCargada);
-        } else {
-          generarPdfBtn.disabled = !(allFilled && plantillaCargada);
-        }
+        generarBtn.disabled = !(plantillaCargada && (esSinCampos || allFilled));
 
         markEmptyFields();
         return allFilled;
@@ -1188,7 +1243,7 @@
             );
           } else if (tipoEspecial === "SALUD RADIOLÓGICA") {
             setStatus(
-              `✅ Plantilla de SALUD RADIOLÓGICA cargada. Complete los campos y presione GENERAR SOLICITUD PDF.`,
+              `✅ Plantilla de SALUD RADIOLÓGICA cargada. Complete los campos y presione GENERAR SOLICITUD.`,
               "success",
             );
           } else {
@@ -1209,7 +1264,6 @@
             "error",
           );
           generarBtn.disabled = true;
-          generarPdfBtn.disabled = true;
           return false;
         }
       }
@@ -1324,7 +1378,6 @@
 
         setStatus(`⚙️ Generando documento de DENUNCIA...`, "loading");
         generarBtn.disabled = true;
-        generarPdfBtn.disabled = true;
 
         try {
           const fecha = new Date()
@@ -1340,15 +1393,97 @@
           window.saveAs(nuevoBlob, nombreArchivo);
 
           setStatus(
-            `✅ DOCUMENTO DE DENUNCIA GENERADO EXITOSAMENTE.`,
+            `✅ Descarga Completada, Busque en su Directorio de Descarga.`,
             "success",
+          );
+          mostrarToast(
+            "El documento de DENUNCIA ha sido descargado correctamente.",
           );
         } catch (error) {
           console.error("❌ Error:", error);
           setStatus(`❌ Error: ${error.message}`, "error");
         } finally {
-          generarBtn.disabled = false;
+          if (esSinCampos) {
+            generarBtn.disabled = false;
+          }
           checkAllFieldsFilled();
+        }
+      }
+
+      async function generarPdf() {
+        const esSinCampos = esPlantillaSinCampos();
+
+        if (esSinCampos) {
+          setStatus(
+            "❌ La generación de PDF no está disponible para DENUNCIAS. Use el botón GENERAR SOLICITUD para descargar el documento Word.",
+            "error",
+          );
+          return;
+        }
+
+        if (typeof window.generarCSOPDF !== "function") {
+          setStatus(
+            "❌ Error: Generador de PDF no disponible. Verifique que pdf-generator.js esté cargado correctamente.",
+            "error",
+          );
+          return;
+        }
+
+        const solicitud = solicitudInput.value.trim();
+        const representante = repInput.value.trim();
+        const cedula = cedInput.value.trim();
+        const empresa = empresaInput.value.trim();
+        const rif = rifInput.value.trim();
+        const direccion = direccionInput.value.trim();
+
+        if (
+          !solicitud ||
+          !representante ||
+          !cedula ||
+          !empresa ||
+          !rif ||
+          !direccion
+        ) {
+          setStatus(
+            "❌ Complete todos los campos obligatorios antes de generar el PDF",
+            "error",
+          );
+          return;
+        }
+
+        const datosFormulario = {
+          solicitud: solicitudInput.value.trim() || "SOLICITUD",
+          representante: repInput.value.trim() || "REPRESENTANTE LEGAL",
+          cedula: cedInput.value.trim() || "V-00000000",
+          empresa: empresaInput.value.trim() || "EMPRESA S.A.",
+          rif: rifInput.value.trim() || "J-00000000-0",
+          direccion:
+            direccionInput.value.trim() || "DIRECCIÓN NO ESPECIFICADA",
+        };
+
+        const plantillaSeleccionada = plantillaSelect.value;
+
+        if (!plantillaSeleccionada) {
+          setStatus("❌ Seleccione una plantilla primero", "error");
+          return;
+        }
+
+        setStatus(
+          "📄 Generando PDF (tamaño carta, márgenes 1.5cm)...",
+          "loading",
+        );
+
+        try {
+          await window.generarCSOPDF(datosFormulario, plantillaSeleccionada);
+
+          setStatus(
+            "✅ Descarga Completada, Busque en su Directorio de Descarga.",
+            "success",
+          );
+          mostrarToast("El PDF ha sido descargado correctamente.");
+        } catch (err) {
+          console.error("❌ Error al generar PDF:", err);
+          setStatus("❌ Error al generar el PDF", "error");
         }
       }
 
@@ -1359,7 +1494,6 @@
         if (!pizzipOk || !saveAsOk) {
           setStatus("❌ Error: Librerías no cargadas", "error");
           generarBtn.disabled = true;
-          generarPdfBtn.disabled = true;
           return;
         }
 
@@ -1371,7 +1505,6 @@
         if (plantillasDisponibles.length === 0) {
           setStatus("❌ No hay plantillas disponibles", "error");
           generarBtn.disabled = true;
-          generarPdfBtn.disabled = true;
           return;
         }
 
@@ -1392,103 +1525,32 @@
         await cargarImagenPreview(nombreCompleto);
 
         generarBtn.disabled = true;
-        generarPdfBtn.disabled = true;
         await cargarPlantilla(nombreCompleto);
         if (plantillaCargada) {
           actualizarEstadoCamposEspeciales();
           if (esPlantillaSinCampos()) {
             generarBtn.disabled = false;
-            generarPdfBtn.disabled = true;
             setStatus(
               `✅ Plantilla de DENUNCIA cargada. Los campos han sido deshabilitados. Puede generar el documento directamente usando el botón GENERAR SOLICITUD.`,
               "success",
             );
           } else if (esPlantillaSaludRadiologica()) {
-            generarBtn.disabled = true;
-            generarPdfBtn.disabled = true;
             setStatus(
               `✅ Plantilla de SALUD RADIOLÓGICA cargada. Complete los campos para generar el PDF.`,
               "success",
             );
             checkAllFieldsFilled();
           } else {
-            generarBtn.disabled = true;
             checkAllFieldsFilled();
           }
         }
       });
 
-      generarBtn.addEventListener("click", generarWord);
-
-      generarPdfBtn.addEventListener("click", function () {
-        if (typeof window.generarCSOPDF === "function") {
-          const esSinCampos = esPlantillaSinCampos();
-          const esSaludRad = esPlantillaSaludRadiologica();
-
-          if (esSinCampos) {
-            setStatus(
-              "❌ La generación de PDF no está disponible para DENUNCIAS. Use el botón GENERAR SOLICITUD.",
-              "error",
-            );
-            return;
-          }
-
-          const solicitud = solicitudInput.value.trim();
-          const representante = repInput.value.trim();
-          const cedula = cedInput.value.trim();
-          const empresa = empresaInput.value.trim();
-          const rif = rifInput.value.trim();
-          const direccion = direccionInput.value.trim();
-
-          if (
-            !solicitud ||
-            !representante ||
-            !cedula ||
-            !empresa ||
-            !rif ||
-            !direccion
-          ) {
-            setStatus(
-              "❌ Complete todos los campos obligatorios antes de generar el PDF",
-              "error",
-            );
-            return;
-          }
-
-          const datosFormulario = {
-            solicitud: solicitudInput.value.trim() || "SOLICITUD",
-            representante: repInput.value.trim() || "REPRESENTANTE LEGAL",
-            cedula: cedInput.value.trim() || "V-00000000",
-            empresa: empresaInput.value.trim() || "EMPRESA S.A.",
-            rif: rifInput.value.trim() || "J-00000000-0",
-            direccion:
-              direccionInput.value.trim() || "DIRECCIÓN NO ESPECIFICADA",
-          };
-
-          const plantillaSeleccionada = plantillaSelect.value;
-
-          if (!plantillaSeleccionada) {
-            setStatus("❌ Seleccione una plantilla primero", "error");
-            return;
-          }
-
-          setStatus(
-            "📄 Generando PDF (tamaño carta, márgenes 1.5cm)...",
-            "loading",
-          );
-
-          window.generarCSOPDF(datosFormulario, plantillaSeleccionada);
-
-          setTimeout(() => {
-            if (!esSinCampos) {
-              setStatus("✅ Listo. Puede continuar.", "success");
-            }
-          }, 3000);
+      generarBtn.addEventListener("click", function () {
+        if (esPlantillaSinCampos()) {
+          generarWord();
         } else {
-          setStatus(
-            "❌ Error: Generador de PDF no disponible. Verifique que pdf-generator.js esté cargado correctamente.",
-            "error",
-          );
+          generarPdf();
         }
       });
 
