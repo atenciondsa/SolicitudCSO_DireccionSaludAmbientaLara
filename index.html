@@ -179,7 +179,7 @@
         border-radius: 4px;
       }
 
-      /* Vista previa: solo tabla de recaudos + juramento + nota */
+      /* Vista previa HTML: solo recaudos + juramento + nota */
       .preview-doc {
         width: 100%;
         background: #ffffff;
@@ -231,6 +231,17 @@
         margin-top: 10px;
         font-size: 8pt;
         text-align: justify;
+      }
+
+      /* Vista previa por imagen (para DENUNCIAS) */
+      .preview-img {
+        max-width: 100%;
+        max-height: 800px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .imagen-destacada .no-img {
@@ -947,9 +958,7 @@
           return null;
         }
 
-        // ==================== VISTA PREVIA: SOLO RECAUDOS + JURAMENTO + NOTA ====================
-        // Extrae únicamente la tabla de recaudos, el juramento y la nota final
-        // del documento generado por pdf-generator.js.
+        // ==================== VISTA PREVIA HTML (RECAUDOS + JURAMENTO + NOTA) ====================
         function renderizarVistaPreviaHTML(nombrePlantillaCompleto) {
           if (typeof window.generarHTMLDocumento !== "function") {
             console.error(
@@ -999,7 +1008,6 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlCompleto, "text/html");
 
-            // Extraer SOLO: tabla de recaudos, juramento y nota adicional.
             const tablaRecaudos = doc.body.querySelector("table");
             const juramento = doc.body.querySelector(".declaracion-jurada");
             const nota = doc.body.querySelector(".nota-adicional");
@@ -1009,23 +1017,13 @@
               return false;
             }
 
-            // Construir el HTML de la vista previa.
             imgContainer.innerHTML = "";
             const wrapper = document.createElement("div");
             wrapper.className = "preview-doc";
 
-            // 1) Tabla de recaudos
             wrapper.appendChild(tablaRecaudos.cloneNode(true));
-
-            // 2) Juramento
-            if (juramento) {
-              wrapper.appendChild(juramento.cloneNode(true));
-            }
-
-            // 3) Nota final
-            if (nota) {
-              wrapper.appendChild(nota.cloneNode(true));
-            }
+            if (juramento) wrapper.appendChild(juramento.cloneNode(true));
+            if (nota) wrapper.appendChild(nota.cloneNode(true));
 
             imgContainer.appendChild(wrapper);
             return true;
@@ -1035,8 +1033,43 @@
           }
         }
 
-        // ==================== VISTA PREVIA (SOLO HTML) ====================
-        function cargarImagenPreview(nombrePlantillaCompleto) {
+        // ==================== VISTA PREVIA POR IMAGEN (SOLO PARA DENUNCIAS) ====================
+        async function renderizarVistaPreviaImagen(nombrePlantillaCompleto) {
+          const nombreSinExtension = nombrePlantillaCompleto.replace(
+            /\.docx$/i,
+            "",
+          );
+          const extensiones = ["jpg", "jpeg", "JPG", "JPEG"];
+
+          for (const ext of extensiones) {
+            const urlImg = `assets/img/${nombreSinExtension}.${ext}`;
+            try {
+              const response = await fetch(urlImg, { method: "HEAD" });
+              if (response.ok) {
+                imgContainer.innerHTML = `
+                            <img src="${urlImg}" alt="${nombreSinExtension}"
+                                 class="preview-img"
+                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-img\\'><span class=\\'no-img-icon\\'>❌</span><br>Error al cargar imagen</div>'">
+                        `;
+                return true;
+              }
+            } catch (error) {
+              // continuar con la siguiente extensión
+            }
+          }
+
+          imgContainer.innerHTML = `
+                    <div class="no-img">
+                        <span class="no-img-icon">📷</span>
+                        <br>No se encontró imagen para:<br>
+                        <strong>${nombreSinExtension}.jpg</strong>
+                    </div>
+                `;
+          return false;
+        }
+
+        // ==================== VISTA PREVIA UNIFICADA ====================
+        async function cargarImagenPreview(nombrePlantillaCompleto) {
           if (!nombrePlantillaCompleto) {
             imgContainer.innerHTML = `
                     <div class="no-img">
@@ -1047,6 +1080,13 @@
             return;
           }
 
+          // ✅ Si es DENUNCIAS → usar imagen JPG
+          if (PLANTILLAS_SIN_CAMPOS.includes(nombrePlantillaCompleto)) {
+            await renderizarVistaPreviaImagen(nombrePlantillaCompleto);
+            return;
+          }
+
+          // ✅ Para el resto → usar vista previa HTML (recaudos + juramento + nota)
           const ok = renderizarVistaPreviaHTML(nombrePlantillaCompleto);
 
           if (!ok) {
@@ -1430,7 +1470,7 @@
           const nombreCompleto = plantillaSelect.value;
           if (!nombreCompleto) return;
 
-          cargarImagenPreview(nombreCompleto);
+          await cargarImagenPreview(nombreCompleto);
 
           generarBtn.disabled = true;
           await cargarPlantilla(nombreCompleto);
