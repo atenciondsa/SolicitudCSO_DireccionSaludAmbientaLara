@@ -154,32 +154,83 @@
 
       .imagen-destacada .imagen-wrapper {
         min-height: 450px;
+        max-height: 850px;
+        overflow-y: auto;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        background: #ffffff50;
+        background: #ffffff;
         border-radius: 20px;
         margin: 10px 0;
-        cursor: pointer;
+        padding: 12px;
       }
 
-      .imagen-destacada img {
-        max-width: 100%;
-        max-height: 450px;
-        width: auto;
-        height: auto;
-        object-fit: contain;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-        transition:
-          transform 0.3s ease,
-          opacity 0.2s ease;
-        cursor: pointer;
+      .imagen-destacada .imagen-wrapper::-webkit-scrollbar {
+        width: 8px;
       }
 
-      .imagen-destacada img:hover {
-        transform: scale(1.02);
-        opacity: 0.95;
+      .imagen-destacada .imagen-wrapper::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 4px;
+      }
+
+      .imagen-destacada .imagen-wrapper::-webkit-scrollbar-track {
+        background: #e2e8f0;
+        border-radius: 4px;
+      }
+
+      /* Vista previa: solo tabla de recaudos + juramento + nota */
+      .preview-doc {
+        width: 100%;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-align: left;
+        font-family: Arial, sans-serif;
+        font-size: 8pt;
+        line-height: 1.4;
+      }
+
+      .preview-doc table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 8pt;
+      }
+
+      .preview-doc th,
+      .preview-doc td {
+        border: 1px solid #000;
+        vertical-align: top;
+        padding: 2px 4px;
+      }
+
+      .preview-doc th {
+        background: #f2f2f2;
+        text-align: center;
+      }
+
+      .preview-doc .declaracion-jurada {
+        margin-top: 12px;
+        font-size: 8pt;
+        text-align: justify;
+        line-height: 1.4;
+      }
+
+      .preview-doc .declaracion-jurada .line {
+        display: inline-block;
+        border-bottom: 1px solid #000;
+        min-width: 180px;
+        height: 14px;
+        vertical-align: bottom;
+      }
+
+      .preview-doc .nota-adicional {
+        border: 1px solid #000;
+        padding: 4px 6px;
+        margin-top: 10px;
+        font-size: 8pt;
+        text-align: justify;
       }
 
       .imagen-destacada .no-img {
@@ -194,116 +245,6 @@
         font-size: 5rem;
         margin-bottom: 15px;
         display: block;
-      }
-
-      .imagen-info {
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 1px solid #cbd5e1;
-        font-size: 0.75rem;
-        color: #64748b;
-        background: #ffffff80;
-        border-radius: 12px;
-        padding: 12px;
-      }
-
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(5px);
-        cursor: pointer;
-        justify-content: center;
-        align-items: center;
-        animation: fadeIn 0.2s ease;
-      }
-
-      .modal.active {
-        display: flex;
-      }
-
-      .modal-content {
-        max-width: 90%;
-        max-height: 90%;
-        position: relative;
-        animation: zoomIn 0.2s ease;
-      }
-
-      .modal-content img {
-        width: auto;
-        height: auto;
-        max-width: 100%;
-        max-height: 90vh;
-        object-fit: contain;
-        border-radius: 12px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      }
-
-      .modal-close {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        color: white;
-        font-size: 40px;
-        font-weight: bold;
-        cursor: pointer;
-        background: rgba(0, 0, 0, 0.5);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        z-index: 10000;
-      }
-
-      .modal-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: scale(1.1);
-      }
-
-      .modal-caption {
-        position: absolute;
-        bottom: 20px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        color: white;
-        font-size: 0.9rem;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 8px;
-        margin: 0 auto;
-        width: fit-content;
-        border-radius: 20px;
-        backdrop-filter: blur(4px);
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-
-        to {
-          opacity: 1;
-        }
-      }
-
-      @keyframes zoomIn {
-        from {
-          transform: scale(0.9);
-          opacity: 0;
-        }
-
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
       }
 
       .campo {
@@ -556,24 +497,6 @@
         border-color: #cbd5e1;
       }
 
-      .special-badge {
-        display: inline-block;
-        background: #dc2626;
-        color: white;
-        font-size: 0.7rem;
-        padding: 4px 12px;
-        border-radius: 20px;
-        margin-left: 10px;
-        vertical-align: middle;
-        letter-spacing: 0;
-        text-transform: none;
-      }
-
-      .special-badge.radiologica {
-        background: #2c7da0;
-      }
-
-      /* ==================== TOAST DE NOTIFICACIÓN ==================== */
       .toast-notificacion {
         position: fixed;
         top: 30px;
@@ -853,23 +776,14 @@
           <h3>RECAUDOS</h3>
           <div class="imagen-wrapper" id="imgContainer">
             <div class="no-img">
-              <span class="no-img-icon">📷</span>
-              <br />Selecciona una plantilla<br />para ver su imagen
+              <span class="no-img-icon">📋</span>
+              <br />Selecciona una plantilla<br />para ver sus recaudos
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="imageModal" class="modal" onclick="closeModal()">
-      <div class="modal-close" onclick="closeModal()">✕</div>
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <img id="modalImage" src="" alt="Vista ampliada" />
-      </div>
-      <div class="modal-caption" id="modalCaption"></div>
-    </div>
-
-    <!-- ==================== TOAST DE NOTIFICACIÓN ==================== -->
     <div id="toastNotificacion" class="toast-notificacion">
       <span class="toast-icon">✅</span>
       <div class="toast-texto">
@@ -902,10 +816,6 @@
         const imgContainer = document.getElementById("imgContainer");
         const camposFormulario = document.getElementById("camposFormulario");
 
-        const modal = document.getElementById("imageModal");
-        const modalImage = document.getElementById("modalImage");
-        const modalCaption = document.getElementById("modalCaption");
-
         const empresaCounter = document.getElementById("empresaCounter");
         const representanteCounter = document.getElementById(
           "representanteCounter",
@@ -934,10 +844,7 @@
         let plantillasDisponibles = [];
         let plantillaBuffer = null;
         let plantillaCargada = false;
-        let imagenActual = null;
-        let currentImageUrl = null;
 
-        // ==================== TOAST DE NOTIFICACIÓN (sin permisos) ====================
         let toastTimeoutId = null;
 
         function mostrarToast(mensaje) {
@@ -960,28 +867,6 @@
             toast.classList.remove("visible");
           }, 5000);
         }
-
-        window.openModal = function (imageUrl, plantillaNombre) {
-          if (!imageUrl) return;
-          modalImage.src = imageUrl;
-          modalCaption.textContent =
-            plantillaNombre || "Vista previa de plantilla";
-          modal.classList.add("active");
-          document.body.style.overflow = "hidden";
-        };
-
-        window.closeModal = function () {
-          modal.classList.remove("active");
-          document.body.style.overflow = "";
-          modalImage.src = "";
-          modalCaption.textContent = "";
-        };
-
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && modal.classList.contains("active")) {
-            closeModal();
-          }
-        });
 
         function updateCounter(input, counterElement, limit) {
           if (!counterElement) return;
@@ -1017,11 +902,6 @@
 
         function esPlantillaSaludRadiologica() {
           return PLANTILLAS_SALUD_RADIOLOGICA.includes(plantillaSelect.value);
-        }
-
-        function esPlantillaGenerableWord() {
-          const valor = plantillaSelect.value;
-          return PLANTILLAS_SIN_CAMPOS.includes(valor);
         }
 
         function actualizarEstadoCamposEspeciales() {
@@ -1067,59 +947,119 @@
           return null;
         }
 
-        async function cargarImagenPreview(nombrePlantillaCompleto) {
-          if (imagenActual === nombrePlantillaCompleto) return;
+        // ==================== VISTA PREVIA: SOLO RECAUDOS + JURAMENTO + NOTA ====================
+        // Extrae únicamente la tabla de recaudos, el juramento y la nota final
+        // del documento generado por pdf-generator.js.
+        function renderizarVistaPreviaHTML(nombrePlantillaCompleto) {
+          if (typeof window.generarHTMLDocumento !== "function") {
+            console.error(
+              "❌ pdf-generator.js no expone generarHTMLDocumento().",
+            );
+            return false;
+          }
+          if (
+            typeof window.determinarTipoCSO !== "function" ||
+            typeof window.recaudosPorTipo !== "object"
+          ) {
+            console.error(
+              "❌ pdf-generator.js no expone determinarTipoCSO() o recaudosPorTipo.",
+            );
+            return false;
+          }
 
+          try {
+            const claveCSO = window.determinarTipoCSO(nombrePlantillaCompleto);
+            const data = window.recaudosPorTipo[claveCSO];
+
+            if (!data) {
+              console.warn(
+                `⚠️ No se encontraron recaudos para: ${nombrePlantillaCompleto} (clave: ${claveCSO})`,
+              );
+              return false;
+            }
+
+            const datosEjemplo = {
+              solicitud: "SOLICITUD",
+              representante: "_________________________",
+              cedula: "_________________________",
+              empresa: "_________________________",
+              rif: "_________________________",
+              direccion: "_________________________",
+            };
+
+            const tieneMuchosItems = data.lista.length > 12;
+            const modoCompacto = tieneMuchosItems;
+
+            const htmlCompleto = window.generarHTMLDocumento(
+              datosEjemplo,
+              data,
+              modoCompacto,
+            );
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlCompleto, "text/html");
+
+            // Extraer SOLO: tabla de recaudos, juramento y nota adicional.
+            const tablaRecaudos = doc.body.querySelector("table");
+            const juramento = doc.body.querySelector(".declaracion-jurada");
+            const nota = doc.body.querySelector(".nota-adicional");
+
+            if (!tablaRecaudos) {
+              console.warn("⚠️ No se encontró la tabla de recaudos.");
+              return false;
+            }
+
+            // Construir el HTML de la vista previa.
+            imgContainer.innerHTML = "";
+            const wrapper = document.createElement("div");
+            wrapper.className = "preview-doc";
+
+            // 1) Tabla de recaudos
+            wrapper.appendChild(tablaRecaudos.cloneNode(true));
+
+            // 2) Juramento
+            if (juramento) {
+              wrapper.appendChild(juramento.cloneNode(true));
+            }
+
+            // 3) Nota final
+            if (nota) {
+              wrapper.appendChild(nota.cloneNode(true));
+            }
+
+            imgContainer.appendChild(wrapper);
+            return true;
+          } catch (e) {
+            console.error("❌ Error al renderizar vista previa:", e);
+            return false;
+          }
+        }
+
+        // ==================== VISTA PREVIA (SOLO HTML) ====================
+        function cargarImagenPreview(nombrePlantillaCompleto) {
           if (!nombrePlantillaCompleto) {
             imgContainer.innerHTML = `
                     <div class="no-img">
-                        <span class="no-img-icon">📷</span>
-                        <br>Selecciona una plantilla<br>para ver su imagen
+                        <span class="no-img-icon">📋</span>
+                        <br>Selecciona una plantilla<br>para ver sus recaudos
                     </div>
                 `;
-            imagenActual = null;
-            currentImageUrl = null;
             return;
           }
 
-          const nombreSinExtension = nombrePlantillaCompleto.replace(
-            /\.docx$/i,
-            "",
-          );
-          const extensiones = ["jpg", "jpeg", "JPG", "JPEG"];
-          let imagenEncontrada = false;
+          const ok = renderizarVistaPreviaHTML(nombrePlantillaCompleto);
 
-          for (const ext of extensiones) {
-            const urlImg = `assets/img/${nombreSinExtension}.${ext}?t=${Date.now()}`;
-            try {
-              const response = await fetch(urlImg, { method: "HEAD" });
-              if (response.ok) {
-                currentImageUrl = `assets/img/${nombreSinExtension}.${ext}`;
-                imgContainer.innerHTML = `
-                            <img src="${urlImg}" alt="${nombreSinExtension}" 
-                                 style="max-width:100%; max-height:450px; border-radius:16px; cursor:pointer;"
-                                 onclick="openModal('${currentImageUrl}', '${nombreSinExtension}')"
-                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-img\\'><span class=\\'no-img-icon\\'>❌</span><br>Error al cargar imagen</div>'">
-                        `;
-                imagenEncontrada = true;
-                imagenActual = nombrePlantillaCompleto;
-                break;
-              }
-            } catch (error) {
-              // continue searching
-            }
-          }
-
-          if (!imagenEncontrada) {
+          if (!ok) {
             imgContainer.innerHTML = `
                     <div class="no-img">
-                        <span class="no-img-icon">📷</span>
-                        <br>No se encontró imagen para:<br>
-                        <strong>${nombreSinExtension}.jpg</strong>
+                        <span class="no-img-icon">⚠️</span>
+                        <br>No se pudieron cargar los recaudos<br>para esta plantilla.<br><br>
+                        <small>Verifique que <strong>pdf-generator.js</strong> exponga:<br>
+                        <code>window.generarHTMLDocumento</code><br>
+                        <code>window.determinarTipoCSO</code><br>
+                        <code>window.recaudosPorTipo</code></small>
                     </div>
                 `;
-            imagenActual = nombrePlantillaCompleto;
-            currentImageUrl = null;
           }
         }
 
@@ -1322,92 +1262,6 @@
           }
         }
 
-        function escapeXmlText(text) {
-          if (!text) return "";
-          return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&apos;");
-        }
-
-        async function reemplazarContentControls(buffer, replacements) {
-          const zip = new window.PizZip(buffer);
-          const documentXmlPath = "word/document.xml";
-
-          if (!zip.files[documentXmlPath]) {
-            throw new Error("No se encontró document.xml en la plantilla");
-          }
-
-          let documentXml = zip.files[documentXmlPath].asText();
-
-          for (const [controlName, newValue] of Object.entries(replacements)) {
-            const escapedName = controlName.replace(
-              /[.*+?^${}()|[\]\\]/g,
-              "\\$&",
-            );
-            const escapedValue = escapeXmlText(newValue);
-
-            const patterns = [
-              new RegExp(
-                '(<w:sdt[^>]*>(?:[\\s\\S]*?)<w:alias\\s+w:val="' +
-                  escapedName +
-                  '(?:\\s+w:autoTag[^>]*)?"/>[\\s\\S]*?<w:text[^>]*>(?:[\\s\\S]*?)<w:t[^>]*>)([\\s\\S]*?)(</w:t>)',
-                "gi",
-              ),
-              new RegExp(
-                '(<w:sdt[^>]*>(?:[\\s\\S]*?)<w:tag\\s+w:val="' +
-                  escapedName +
-                  '"[^>]*/>[\\s\\S]*?<w:text[^>]*>(?:[\\s\\S]*?)<w:t[^>]*>)([\\s\\S]*?)(</w:t>)',
-                "gi",
-              ),
-              new RegExp(
-                '(<w:sdt[^>]*>(?:[\\s\\S]*?)<w:alias\\s+w:val="' +
-                  escapedName +
-                  '"[^>]*/>[\\s\\S]*?<w:t[^>]*>)([\\s\\S]*?)(</w:t>)',
-                "gi",
-              ),
-              new RegExp(
-                '(<w:sdt[^>]*>(?:[\\s\\S]*?)<w:tag\\s+w:val="' +
-                  escapedName +
-                  '"[^>]*/>[\\s\\S]*?<w:t[^>]*>)([\\s\\S]*?)(</w:t>)',
-                "gi",
-              ),
-            ];
-
-            let replaced = false;
-
-            for (const pattern of patterns) {
-              if (pattern.test(documentXml)) {
-                documentXml = documentXml.replace(
-                  pattern,
-                  (match, before, oldContent, after) => {
-                    replaced = true;
-                    return before + escapedValue + after;
-                  },
-                );
-                if (replaced) break;
-              }
-            }
-
-            if (!replaced) {
-              console.warn(
-                `⚠️ No se encontró Content Control: "${controlName}"`,
-              );
-            }
-          }
-
-          zip.file(documentXmlPath, documentXml);
-
-          return zip.generate({
-            type: "blob",
-            mimeType:
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            compression: "DEFLATE",
-          });
-        }
-
         async function generarWord() {
           const esSinCampos = esPlantillaSinCampos();
 
@@ -1576,7 +1430,7 @@
           const nombreCompleto = plantillaSelect.value;
           if (!nombreCompleto) return;
 
-          await cargarImagenPreview(nombreCompleto);
+          cargarImagenPreview(nombreCompleto);
 
           generarBtn.disabled = true;
           await cargarPlantilla(nombreCompleto);
