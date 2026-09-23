@@ -915,6 +915,9 @@ async function generarPDFConDatos(datosFormulario, data) {
 
 // ==================== EXPORTAR FUNCIÓN GLOBAL ====================
 window.generarCSOPDF = generarCSOPDF;
+window.generarHTMLDocumento = generarHTMLDocumento;
+window.determinarTipoCSO = determinarTipoCSO;
+window.recaudosPorTipo = recaudosPorTipo;
 console.log(
   "✅ pdf-generator.js cargado correctamente - DISEÑO IDÉNTICO AL HTML",
 );
