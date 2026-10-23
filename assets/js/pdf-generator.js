@@ -543,6 +543,14 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
   let textoPermiso =
     "de la Conformidad Sanitaria de Ocupación del establecimiento (CSO):";
 
+  // Detectar si es un trámite de Salud Radiológica
+  const esSaludRadiologica =
+    tituloTabla.includes("AMBIENTE RADIOLÓGICO") ||
+    tituloTabla.includes("AMBIENTE RADIOLOGICO") ||
+    tituloTabla.includes("FUNCIONAMIENTO RADIOLÓGICO") ||
+    tituloTabla.includes("FUNCIONAMIENTO RADIOLOGICO") ||
+    tituloTabla.includes("RIMFRI");
+
   if (
     tituloTabla.includes("AMBIENTE RADIOLÓGICO") ||
     tituloTabla.includes("AMBIENTE RADIOLOGICO")
@@ -556,6 +564,11 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
   } else if (tituloTabla.includes("RIMFRI")) {
     textoPermiso = "del RIMFRI:";
   }
+
+  // Segundo encabezado del footer: cambia solo para Salud Radiológica
+  const footerEncabezado2 = esSaludRadiologica
+    ? "Salud Radiológica"
+    : "Ingeniería Sanitaria";
 
   let filasTabla = "";
   data.lista.forEach((item) => {
@@ -781,7 +794,7 @@ function generarHTMLDocumento(datos, data, modoCompacto = false) {
   <table class="footer-table">
     <tr>
       <th>Taquilla Única DSA</th>
-      <th>Ingeniería Sanitaria</th>
+      <th>${footerEncabezado2}</th>
       <th>Dirección</th>
     </tr>
     <tr>
